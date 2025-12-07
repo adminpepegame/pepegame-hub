@@ -5,47 +5,200 @@
   <title>PEPEGAME - Tap to Earn</title>
   <style>
     body {
-      background: #050816;
+      background: radial-gradient(circle at top, #101635 0%, #02030a 60%);
       color: #f5f5f5;
       font-family: Arial, sans-serif;
       text-align: center;
-      padding: 40px 10px;
+      padding: 30px 10px;
     }
-    h1 { margin-bottom: 10px; }
+    h1 { margin-bottom: 4px; font-size: 20px; }
+    #subtitle {
+      font-size: 12px;
+      opacity: 0.8;
+      margin-bottom: 16px;
+    }
+    #top-bar {
+      font-size: 12px;
+      opacity: 0.85;
+      margin-bottom: 8px;
+    }
+    #level-bar-container {
+      width: 80%;
+      max-width: 320px;
+      height: 10px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.08);
+      margin: 0 auto 6px;
+      overflow: hidden;
+    }
+    #level-bar-fill {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, #27ae60, #2ecc71);
+      transition: width 0.2s ease-out;
+    }
+    #level-text {
+      font-size: 12px;
+      opacity: 0.9;
+      margin-bottom: 18px;
+    }
     #points {
-      font-size: 32px;
-      margin: 10px 0 20px;
+      font-size: 28px;
+      margin: 10px 0 8px;
+    }
+    #next-target {
+      font-size: 13px;
+      opacity: 0.9;
+      margin-bottom: 18px;
     }
     #tap-button {
       background: #27ae60;
       border: none;
       color: white;
-      padding: 16px 32px;
+      padding: 16px 36px;
       font-size: 20px;
       border-radius: 999px;
       cursor: pointer;
+      box-shadow: 0 6px 18px rgba(0, 0, 0, 0.5);
+      transition: transform 0.05s ease-out, box-shadow 0.1s ease-out;
     }
     #tap-button:active {
-      transform: scale(0.97);
+      transform: scale(0.96);
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.7);
       background: #1f8a4c;
+    }
+    #floating-plus {
+      position: relative;
+      height: 24px;
+      margin-top: 6px;
+      font-size: 16px;
+      color: #2ecc71;
+    }
+    #missions {
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 90%;
+      max-width: 360px;
+      background: rgba(0, 0, 0, 0.4);
+      border-radius: 12px;
+      padding: 10px 12px;
+      font-size: 12px;
+      text-align: left;
+    }
+    #missions-title {
+      font-weight: bold;
+      margin-bottom: 4px;
+    }
+    .mission-line {
+      margin: 2px 0;
+      opacity: 0.9;
     }
   </style>
 </head>
 <body>
+  <div id="top-bar">Invité #1234 · Niveau <span id="level-label">1</span></div>
+
   <h1>PEPEGAME - Tap PEPE</h1>
-  <p>Chaque tap = +1 PEPE POINT (MVP local)</p>
+  <div id="subtitle">Chaque tap = +1 PEPE POINT (MVP local)</div>
+
+  <div id="level-bar-container">
+    <div id="level-bar-fill"></div>
+  </div>
+  <div id="level-text">XP : <span id="xp-value">0</span> / <span id="xp-max">100</span></div>
+
   <div id="points">Points : 0</div>
+  <div id="next-target">Prochain coffre à 200 points</div>
+
   <button id="tap-button">TAP PEPE 🐸</button>
+  <div id="floating-plus"></div>
+
+  <div id="missions">
+    <div id="missions-title">Missions du jour</div>
+    <div class="mission-line" id="mission-coffre">• Gagner 200 points → Coffre bronze</div>
+    <div class="mission-line" id="mission-taps">• Faire 100 taps → Boost x2 (visuel)</div>
+  </div>
 
   <script>
     let points = 0;
-    const pointsEl = document.getElementById('points');
-    const btn = document.getElementById('tap-button');
+    let taps = 0;
+    let level = 1;
+    let xp = 0;
+    const xpPerLevel = 100;
+    const pointsPerXp = 10; // 10 points = 1 XP
+    const coffreTarget = 200;
+    const tapsTarget = 100;
 
-    btn.addEventListener('click', () => {
-      points += 1;
+    const pointsEl = document.getElementById('points');
+    const tapBtn = document.getElementById('tap-button');
+    const levelLabelEl = document.getElementById('level-label');
+    const xpValueEl = document.getElementById('xp-value');
+    const xpMaxEl = document.getElementById('xp-max');
+    const levelBarFillEl = document.getElementById('level-bar-fill');
+    const levelTextEl = document.getElementById('level-text');
+    const nextTargetEl = document.getElementById('next-target');
+    const floatingPlusEl = document.getElementById('floating-plus');
+    const missionCoffreEl = document.getElementById('mission-coffre');
+    const missionTapsEl = document.getElementById('mission-taps');
+
+    function updateUI() {
       pointsEl.textContent = 'Points : ' + points;
-    });
+      xpValueEl.textContent = xp;
+      xpMaxEl.textContent = xpPerLevel;
+      levelLabelEl.textContent = level;
+
+      const xpPercent = Math.min(100, (xp / xpPerLevel) * 100);
+      levelBarFillEl.style.width = xpPercent + '%';
+
+      const pointsToNextLevel = Math.max(0, xpPerLevel - xp);
+      levelTextEl.textContent = 'XP : ' + xp + ' / ' + xpPerLevel + ' · Encore ' + pointsToNextLevel + ' XP pour le niveau suivant';
+
+      const pointsToCoffre = Math.max(0, coffreTarget - points);
+      if (pointsToCoffre === 0) {
+        nextTargetEl.textContent = 'Coffre bronze débloqué (visuel) !';
+      } else {
+        nextTargetEl.textContent = 'Prochain coffre : ' + pointsToCoffre + ' points restants';
+      }
+
+      const tapsRemaining = Math.max(0, tapsTarget - taps);
+      missionTapsEl.textContent = '• Faire 100 taps → Boost x2 (reste ' + tapsRemaining + ')';
+      missionCoffreEl.textContent = '• Gagner 200 points → Coffre bronze (reste ' + pointsToCoffre + ')';
+    }
+
+    function handleTap() {
+      points += 1;
+      taps += 1;
+
+      if (points % pointsPerXp === 0) {
+        xp += 1;
+      }
+
+      if (xp >= xpPerLevel) {
+        xp -= xpPerLevel;
+        level += 1;
+        // Simple feedback texte pour le moment
+        alert('LEVEL UP ! Niveau ' + level);
+      }
+
+      showFloatingPlus();
+      updateUI();
+    }
+
+    function showFloatingPlus() {
+      floatingPlusEl.textContent = '+1';
+      floatingPlusEl.style.opacity = '1';
+      floatingPlusEl.style.transform = 'translateY(0px)';
+
+      setTimeout(() => {
+        floatingPlusEl.style.opacity = '0';
+        floatingPlusEl.style.transform = 'translateY(-10px)';
+      }, 200);
+    }
+
+    tapBtn.addEventListener('click', handleTap);
+
+    updateUI();
   </script>
 </body>
 </html>
