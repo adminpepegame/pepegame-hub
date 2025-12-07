@@ -2,6 +2,7 @@
 <html lang="fr">
 <head>
   <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
   <title>PEPEGAME - Tap to Earn</title>
   <style>
     * { box-sizing: border-box; }
@@ -20,7 +21,6 @@
       align-items: center;
     }
 
-    /* Décor pièces flottantes très léger */
     body::before,
     body::after {
       content: "";
@@ -50,7 +50,6 @@
       margin-bottom: 8px;
     }
 
-    /* Logo grenouille-coin (pur CSS pour l’instant) */
     #logo-wrapper {
       margin-top: 6px;
       margin-bottom: 8px;
@@ -74,7 +73,7 @@
       border-radius: 50%;
       background: radial-gradient(circle at 30% 20%, #1ddf7b, #0c9c4c 70%);
     }
-    /* Tête grenouille stylisée */
+
     #frog-face {
       position: relative;
       width: 40px;
@@ -188,6 +187,7 @@
       cursor: pointer;
       box-shadow: 0 8px 22px rgba(0, 0, 0, 0.6);
       transition: transform 0.06s ease-out, box-shadow 0.12s ease-out, filter 0.12s ease-out;
+      touch-action: manipulation;
     }
     #tap-button:active {
       transform: translateY(1px) scale(0.97);
@@ -292,13 +292,13 @@
     let level = 1;
     let xp = 0;
     const xpPerLevel = 100;
-    const pointsPerXp = 10; // 10 points = 1 XP
+    const pointsPerXp = 10;
     const coffreTarget = 200;
     const tapsTarget = 100;
 
     let energy = 100;
     const maxEnergy = 100;
-    const energyRegenMs = 30000; // +1 énergie toutes les 30s
+    const energyRegenMs = 30000;
 
     const pointsEl = document.getElementById('points');
     const tapBtn = document.getElementById('tap-button');
