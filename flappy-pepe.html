@@ -10,7 +10,7 @@
     body {
       margin: 0;
       min-height: 100vh;
-      background: linear-gradient(to bottom, #0ea5e9, #0f172a);
+      background: #000;
       font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
       color: #f9fafb;
       display: flex;
@@ -46,7 +46,7 @@
       display: block;
       width: 100%;
       height: auto;
-      background: linear-gradient(to bottom, #0ea5e9, #22c55e);
+      background: #000;
     }
 
     #hud {
@@ -80,7 +80,7 @@
 </head>
 <body>
   <h1>PEPEGAME – Flappy Pepe</h1>
-  <div id="subtitle">Tape l’écran pour faire voler Pepe et éviter les tuyaux (difficulté progressive).</div>
+  <div id="subtitle">Tape l’écran pour faire voler Pepe et éviter les tuyaux (décor qui évolue avec ton run).</div>
 
   <div id="game-wrapper">
     <canvas id="gameCanvas" width="300" height="450"></canvas>
@@ -101,7 +101,7 @@
     const scoreEl = document.getElementById('score');
     const bestScoreEl = document.getElementById('bestScore');
 
-    // Best score en localStorage
+    // --- Meilleur score local ---
     function loadBestScore() {
       const v = localStorage.getItem('flappyBestScore');
       return v ? parseInt(v, 10) : 0;
@@ -113,12 +113,12 @@
     let bestScore = loadBestScore();
     bestScoreEl.textContent = bestScore;
 
-    // Paramètres de base (easy mode) [web:178][web:181]
-    let gravity = 0.32;        // tombe un peu moins vite
+    // --- Paramètres de jeu (easy au début) [web:181][web:214] ---
+    let gravity = 0.32;
     let flapStrength = -7;
-    let pipeGap = 140;         // trou plus grand
+    let pipeGap = 140;
     let pipeWidth = 55;
-    let pipeSpeed = 1.7;       // tuyaux plus lents
+    let pipeSpeed = 1.7;
 
     let birdX = 70;
     let birdY = canvas.height / 2;
@@ -130,6 +130,34 @@
     let gameOver = false;
     let started = false;
 
+    // --- Distance & décor évolutif ---
+    let distance = 0;
+    let distancePerFrame = 1;
+
+    let currentStage = 1;           // décor actuellement "fixé"
+    let targetStage = 1;            // décor visé selon la distance
+    let lastStage = 1;              // décor précédent (pour fondu)
+    let stageTransitionProgress = 1; // 0 -> 1 (fondu terminé)
+
+    // Charge les 4 backgrounds avec TES noms de fichiers
+    const bgImages = [];
+
+    // 1 = grenouille pauvre
+    bgImages[1] = new Image();
+    bgImages[1].src = 'image-9.png';
+
+    // 2 = un peu mieux habillée
+    bgImages[2] = new Image();
+    bgImages[2].src = 'image-10.png';
+
+    // 3 = plus riche
+    bgImages[3] = new Image();
+    bgImages[3].src = 'image-19.png';
+
+    // 4 = très riche
+    bgImages[4] = new Image();
+    bgImages[4].src = 'image-15.png';
+
     function resetGame() {
       birdX = 70;
       birdY = canvas.height / 2;
@@ -140,10 +168,17 @@
       started = false;
       scoreEl.textContent = score;
 
-      // on remet la difficulté au plus simple au restart
+      // Reset difficulté
       gravity = 0.32;
       pipeGap = 140;
       pipeSpeed = 1.7;
+
+      // Reset distance & décor
+      distance = 0;
+      currentStage = 1;
+      targetStage = 1;
+      lastStage = 1;
+      stageTransitionProgress = 1;
     }
 
     function createPipe() {
@@ -163,6 +198,35 @@
     function update() {
       if (!started) return;
 
+      // Distance parcourue (sert à faire évoluer le décor) [web:193]
+      distance += distancePerFrame;
+
+      // Détermine la targetStage selon la distance (paliers à ajuster si besoin)
+      let newTarget = 1;
+      if (distance >= 800 && distance < 2000) {
+        newTarget = 2;
+      } else if (distance >= 2000 && distance < 4000) {
+        newTarget = 3;
+      } else if (distance >= 4000) {
+        newTarget = 4;
+      }
+
+      if (newTarget !== targetStage) {
+        lastStage = currentStage;
+        targetStage = newTarget;
+        stageTransitionProgress = 0; // lance un nouveau fondu
+      }
+
+      // Avancement du fondu crescendo (0.01 ~ 2 s, à ajuster) [web:189]
+      if (stageTransitionProgress < 1) {
+        stageTransitionProgress += 0.01;
+        if (stageTransitionProgress >= 1) {
+          stageTransitionProgress = 1;
+          currentStage = targetStage;
+        }
+      }
+
+      // Physique de l'oiseau
       birdVy += gravity;
       birdY += birdVy;
 
@@ -175,7 +239,7 @@
         const p = pipes[i];
         p.x -= pipeSpeed;
 
-        // Passage réussi → +1 score + éventuelle montée de difficulté
+        // Passage réussi → +1 score & scaling difficulté [web:171][web:181]
         if (!p.passed && p.x + pipeWidth < birdX) {
           p.passed = true;
           score++;
@@ -186,7 +250,6 @@
             saveBestScore(bestScore);
           }
 
-          // Scaling de difficulté en fonction du score [web:171][web:181]
           if (score === 5) {
             pipeGap = 130;
             pipeSpeed = 1.9;
@@ -204,12 +267,12 @@
         }
       }
 
-      // Collision avec haut/bas
+      // Collision haut / bas
       if (birdY + birdRadius >= canvas.height || birdY - birdRadius <= 0) {
         gameOver = true;
       }
 
-      // Collision avec tuyaux
+      // Collisions avec les tuyaux
       for (const p of pipes) {
         const inX = birdX + birdRadius > p.x && birdX - birdRadius < p.x + pipeWidth;
         const inYTop = birdY - birdRadius < p.top;
@@ -227,22 +290,50 @@
     function draw() {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-      const grd = ctx.createLinearGradient(0, 0, 0, canvas.height);
-      grd.addColorStop(0, '#0ea5e9');
-      grd.addColorStop(0.7, '#22c55e');
-      ctx.fillStyle = grd;
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      // --- Dessin du décor avec fondu crescendo ---
+      const bgCurrent = bgImages[currentStage];
+      const bgTarget = bgImages[targetStage];
 
+      if (bgCurrent && bgCurrent.complete && stageTransitionProgress === 1) {
+        // Pas de transition : décor courant
+        ctx.drawImage(bgCurrent, 0, 0, canvas.width, canvas.height);
+      } else if (bgCurrent && bgCurrent.complete && bgTarget && bgTarget.complete) {
+        // Transition : fondu croisé entre lastStage et targetStage [web:189][web:193]
+        const alpha = stageTransitionProgress;
+
+        ctx.globalAlpha = 1 - alpha;
+        ctx.drawImage(bgImages[lastStage], 0, 0, canvas.width, canvas.height);
+
+        ctx.globalAlpha = alpha;
+        ctx.drawImage(bgTarget, 0, 0, canvas.width, canvas.height);
+
+        ctx.globalAlpha = 1;
+      } else {
+        // Fallback si les images ne sont pas encore chargées
+        const grd = ctx.createLinearGradient(0, 0, 0, canvas.height);
+        grd.addColorStop(0, '#0ea5e9');
+        grd.addColorStop(0.7, '#22c55e');
+        ctx.fillStyle = grd;
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+      }
+
+      // Sol
       ctx.fillStyle = '#16a34a';
       ctx.fillRect(0, canvas.height - 60, canvas.width, 60);
 
+      // Tuyaux
       ctx.fillStyle = '#0f172a';
       for (const p of pipes) {
         ctx.fillRect(p.x, 0, pipeWidth, p.top);
-        ctx.fillRect(p.x, p.top + pipeGap, pipeWidth, canvas.height - (p.top + pipeGap));
+        ctx.fillRect(
+          p.x,
+          p.top + pipeGap,
+          pipeWidth,
+          canvas.height - (p.top + pipeGap)
+        );
       }
 
-      // Pepe “rond” simple
+      // Pepe (cercle vert pour le proto)
       ctx.beginPath();
       ctx.arc(birdX, birdY, birdRadius, 0, Math.PI * 2);
       ctx.fillStyle = '#22c55e';
