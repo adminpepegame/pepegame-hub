@@ -80,7 +80,7 @@
 </head>
 <body>
   <h1>PEPEGAME – Flappy Pepe</h1>
-  <div id="subtitle">Tape l’écran pour faire voler Pepe et éviter les tuyaux (prototype très simple).</div>
+  <div id="subtitle">Tape l’écran pour faire voler Pepe et éviter les tuyaux (prototype simple).</div>
 
   <div id="game-wrapper">
     <canvas id="gameCanvas" width="300" height="450"></canvas>
@@ -101,7 +101,6 @@
     const scoreEl = document.getElementById('score');
     const bestScoreEl = document.getElementById('bestScore');
 
-    // Lecture / écriture meilleur score
     function loadBestScore() {
       const v = localStorage.getItem('flappyBestScore');
       return v ? parseInt(v, 10) : 0;
@@ -113,7 +112,6 @@
     let bestScore = loadBestScore();
     bestScoreEl.textContent = bestScore;
 
-    // Paramètres de jeu de base (inspirés des tutos flappy JS) [web:156][web:160]
     const gravity = 0.4;
     const flapStrength = -7;
     const pipeGap = 110;
@@ -222,7 +220,6 @@
         ctx.fillRect(p.x, p.top + pipeGap, pipeWidth, canvas.height - (p.top + pipeGap));
       }
 
-      // Pepe “rond” pour le proto
       ctx.beginPath();
       ctx.arc(birdX, birdY, birdRadius, 0, Math.PI * 2);
       ctx.fillStyle = '#22c55e';
