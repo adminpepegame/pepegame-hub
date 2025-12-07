@@ -80,7 +80,7 @@
 </head>
 <body>
   <h1>PEPEGAME – Flappy Pepe</h1>
-  <div id="subtitle">Tape l’écran pour faire voler Pepe et éviter les tuyaux (prototype simple).</div>
+  <div id="subtitle">Tape l’écran pour faire voler Pepe et éviter les tuyaux (difficulté progressive).</div>
 
   <div id="game-wrapper">
     <canvas id="gameCanvas" width="300" height="450"></canvas>
@@ -101,6 +101,7 @@
     const scoreEl = document.getElementById('score');
     const bestScoreEl = document.getElementById('bestScore');
 
+    // Best score en localStorage
     function loadBestScore() {
       const v = localStorage.getItem('flappyBestScore');
       return v ? parseInt(v, 10) : 0;
@@ -112,11 +113,12 @@
     let bestScore = loadBestScore();
     bestScoreEl.textContent = bestScore;
 
-    const gravity = 0.4;
-    const flapStrength = -7;
-    const pipeGap = 110;
-    const pipeWidth = 55;
-    const pipeSpeed = 2.2;
+    // Paramètres de base (easy mode) [web:178][web:181]
+    let gravity = 0.32;        // tombe un peu moins vite
+    let flapStrength = -7;
+    let pipeGap = 140;         // trou plus grand
+    let pipeWidth = 55;
+    let pipeSpeed = 1.7;       // tuyaux plus lents
 
     let birdX = 70;
     let birdY = canvas.height / 2;
@@ -137,6 +139,11 @@
       gameOver = false;
       started = false;
       scoreEl.textContent = score;
+
+      // on remet la difficulté au plus simple au restart
+      gravity = 0.32;
+      pipeGap = 140;
+      pipeSpeed = 1.7;
     }
 
     function createPipe() {
@@ -168,6 +175,7 @@
         const p = pipes[i];
         p.x -= pipeSpeed;
 
+        // Passage réussi → +1 score + éventuelle montée de difficulté
         if (!p.passed && p.x + pipeWidth < birdX) {
           p.passed = true;
           score++;
@@ -177,6 +185,18 @@
             bestScoreEl.textContent = bestScore;
             saveBestScore(bestScore);
           }
+
+          // Scaling de difficulté en fonction du score [web:171][web:181]
+          if (score === 5) {
+            pipeGap = 130;
+            pipeSpeed = 1.9;
+          } else if (score === 10) {
+            pipeGap = 120;
+            pipeSpeed = 2.1;
+          } else if (score === 20) {
+            pipeGap = 110;
+            pipeSpeed = 2.4;
+          }
         }
 
         if (p.x + pipeWidth < -10) {
@@ -184,10 +204,12 @@
         }
       }
 
+      // Collision avec haut/bas
       if (birdY + birdRadius >= canvas.height || birdY - birdRadius <= 0) {
         gameOver = true;
       }
 
+      // Collision avec tuyaux
       for (const p of pipes) {
         const inX = birdX + birdRadius > p.x && birdX - birdRadius < p.x + pipeWidth;
         const inYTop = birdY - birdRadius < p.top;
@@ -220,6 +242,7 @@
         ctx.fillRect(p.x, p.top + pipeGap, pipeWidth, canvas.height - (p.top + pipeGap));
       }
 
+      // Pepe “rond” simple
       ctx.beginPath();
       ctx.arc(birdX, birdY, birdRadius, 0, Math.PI * 2);
       ctx.fillStyle = '#22c55e';
