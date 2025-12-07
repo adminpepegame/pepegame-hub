@@ -1,0 +1,591 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+  <title>Pepe Mine Tycoon</title>
+  <style>
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: linear-gradient(to bottom, #0f172a, #020617);
+      color: #e5e7eb;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 12px 8px 24px;
+    }
+
+    h1 {
+      font-size: 20px;
+      margin: 4px 0 2px;
+    }
+    #subtitle {
+      font-size: 12px;
+      opacity: 0.85;
+      margin-bottom: 8px;
+      text-align: center;
+    }
+
+    #topbar {
+      width: 100%;
+      max-width: 420px;
+      display: flex;
+      justify-content: space-between;
+      gap: 6px;
+      margin-bottom: 8px;
+    }
+
+    .currency-pill {
+      flex: 1;
+      padding: 6px 8px;
+      border-radius: 999px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 11px;
+      background: rgba(15, 23, 42, 0.95);
+      border: 1px solid rgba(148, 163, 184, 0.6);
+      box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+    }
+    .currency-label {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .currency-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+    }
+
+    .dot-mine   { background: #fbbf24; }
+    .dot-silver { background: #e5e7eb; }
+    .dot-plat   { background: #38bdf8; }
+
+    #game-wrapper {
+      width: 100%;
+      max-width: 420px;
+      border-radius: 16px;
+      overflow: hidden;
+      background: #020617;
+      border: 1px solid rgba(148, 163, 184, 0.7);
+      box-shadow: 0 14px 30px rgba(0,0,0,0.85);
+    }
+
+    #surface {
+      height: 70px;
+      background: linear-gradient(to right, #22c55e, #16a34a);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 8px 10px;
+    }
+
+    #surface-info {
+      font-size: 12px;
+    }
+    #surface-info strong {
+      font-size: 13px;
+    }
+
+    #collect-btn {
+      padding: 8px 14px;
+      border-radius: 999px;
+      border: none;
+      background: linear-gradient(135deg, #facc15, #f97316);
+      color: #111827;
+      font-size: 13px;
+      font-weight: 600;
+      box-shadow: 0 6px 14px rgba(0,0,0,0.6);
+    }
+
+    #mine {
+      background: #020617;
+      padding: 8px 8px 10px;
+    }
+
+    .shaft {
+      position: relative;
+      height: 90px;
+      margin-bottom: 6px;
+      border-radius: 10px;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      padding: 6px 8px;
+      box-shadow: inset 0 0 0 1px rgba(15,23,42,0.9);
+    }
+
+    .shaft-bg-1 {
+      background: linear-gradient(to right, #3b0764, #1e293b);
+    }
+    .shaft-bg-2 {
+      background: linear-gradient(to right, #4b5563, #020617);
+    }
+    .shaft-bg-3 {
+      background: linear-gradient(to right, #0f172a, #0369a1);
+    }
+
+    .shaft-left {
+      width: 72px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+      border-right: 1px solid rgba(148,163,184,0.5);
+      margin-right: 6px;
+      padding-right: 6px;
+    }
+
+    .shaft-level {
+      font-size: 11px;
+      opacity: 0.9;
+    }
+    .shaft-prod {
+      font-size: 11px;
+      font-weight: 600;
+    }
+
+    .shaft-icon {
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      background: rgba(15,23,42,0.85);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #e5e7eb;
+      font-size: 16px;
+    }
+
+    .shaft-right {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      height: 100%;
+      padding: 2px 0;
+    }
+
+    .shaft-bar-bg {
+      width: 100%;
+      height: 8px;
+      border-radius: 999px;
+      background: rgba(15,23,42,0.8);
+      overflow: hidden;
+      margin-bottom: 4px;
+    }
+    .shaft-bar-fill {
+      height: 100%;
+      border-radius: inherit;
+    }
+    .fill-1 { background: linear-gradient(to right, #facc15, #f97316); }
+    .fill-2 { background: linear-gradient(to right, #e5e7eb, #9ca3af); }
+    .fill-3 { background: linear-gradient(to right, #38bdf8, #0ea5e9); }
+
+    .shaft-storage {
+      font-size: 11px;
+      display: flex;
+      justify-content: space-between;
+      opacity: 0.9;
+      margin-bottom: 3px;
+    }
+
+    .shaft-upgrade-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .upgrade-btn {
+      padding: 4px 8px;
+      border-radius: 999px;
+      border: none;
+      font-size: 11px;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      white-space: nowrap;
+      background: linear-gradient(135deg, #22c55e, #16a34a);
+      color: #ecfdf5;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.6);
+    }
+
+    .upgrade-cost {
+      font-size: 10px;
+      opacity: 0.85;
+    }
+
+    #footer-info {
+      padding: 6px 10px 8px;
+      font-size: 10px;
+      opacity: 0.7;
+      text-align: center;
+      border-top: 1px solid rgba(15,23,42,0.9);
+    }
+
+    #back-link {
+      margin-top: 10px;
+      font-size: 13px;
+      text-decoration: none;
+      color: #a5b4fc;
+    }
+  </style>
+</head>
+<body>
+  <h1>Pepe Mine Tycoon</h1>
+  <div id="subtitle">
+    Collecte des Mine Coins, upgrade ta mine et progresse vers Silver puis Platine Coin.
+  </div>
+
+  <div id="topbar">
+    <div class="currency-pill">
+      <div class="currency-label">
+        <span class="currency-dot dot-mine"></span>
+        <span>Mine Coin</span>
+      </div>
+      <span id="mineCoinAmount">0</span>
+    </div>
+    <div class="currency-pill">
+      <div class="currency-label">
+        <span class="currency-dot dot-silver"></span>
+        <span>Silver Coin</span>
+      </div>
+      <span id="silverCoinAmount">0</span>
+    </div>
+    <div class="currency-pill">
+      <div class="currency-label">
+        <span class="currency-dot dot-plat"></span>
+        <span>Platine Coin</span>
+      </div>
+      <span id="platCoinAmount">0</span>
+    </div>
+  </div>
+
+  <div id="game-wrapper">
+    <div id="surface">
+      <div id="surface-info">
+        <div><strong>Coffre de mine</strong></div>
+        <div><span id="storedMine">0</span> Mine Coins stockés</div>
+      </div>
+      <button id="collect-btn">Collect</button>
+    </div>
+
+    <div id="mine">
+      <!-- Étages -->
+      <div class="shaft shaft-bg-1" data-index="0">
+        <div class="shaft-left">
+          <div class="shaft-icon">⛏️</div>
+          <div class="shaft-level">Lvl <span class="shaft-level-val">1</span></div>
+          <div class="shaft-prod">
+            +<span class="shaft-prod-val">1</span>/s
+          </div>
+        </div>
+        <div class="shaft-right">
+          <div class="shaft-bar-bg">
+            <div class="shaft-bar-fill fill-1" style="width: 0%;"></div>
+          </div>
+          <div class="shaft-storage">
+            <span>Mine Coins générés</span>
+            <span><span class="shaft-storage-val">0</span> / <span class="shaft-storage-cap">20</span></span>
+          </div>
+          <div class="shaft-upgrade-row">
+            <button class="upgrade-btn">
+              Upgrade
+            </button>
+            <div class="upgrade-cost">
+              Coût : <span class="upgrade-cost-val">15</span> Mine Coin
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="shaft shaft-bg-2" data-index="1">
+        <div class="shaft-left">
+          <div class="shaft-icon">⛏️</div>
+          <div class="shaft-level">Lvl <span class="shaft-level-val">1</span></div>
+          <div class="shaft-prod">
+            +<span class="shaft-prod-val">0</span>/s
+          </div>
+        </div>
+        <div class="shaft-right">
+          <div class="shaft-bar-bg">
+            <div class="shaft-bar-fill fill-2" style="width: 0%;"></div>
+          </div>
+          <div class="shaft-storage">
+            <span>Silver zone (lockée)</span>
+            <span><span class="shaft-storage-val">0</span> / <span class="shaft-storage-cap">0</span></span>
+          </div>
+          <div class="shaft-upgrade-row">
+            <button class="upgrade-btn">
+              Unlock
+            </button>
+            <div class="upgrade-cost">
+              Coût : <span class="upgrade-cost-val">250</span> Mine Coin
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="shaft shaft-bg-3" data-index="2">
+        <div class="shaft-left">
+          <div class="shaft-icon">⛏️</div>
+          <div class="shaft-level">Lvl <span class="shaft-level-val">1</span></div>
+          <div class="shaft-prod">
+            +<span class="shaft-prod-val">0</span>/s
+          </div>
+        </div>
+        <div class="shaft-right">
+          <div class="shaft-bar-bg">
+            <div class="shaft-bar-fill fill-3" style="width: 0%;"></div>
+          </div>
+          <div class="shaft-storage">
+            <span>Platine zone (lockée)</span>
+            <span><span class="shaft-storage-val">0</span> / <span class="shaft-storage-cap">0</span></span>
+          </div>
+          <div class="shaft-upgrade-row">
+            <button class="upgrade-btn">
+              Unlock
+            </button>
+            <div class="upgrade-cost">
+              Coût : <span class="upgrade-cost-val">2 000</span> Silver Coin
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="footer-info">
+      Prototype offline, données stockées en localStorage. Monte en niveau, débloque Silver puis Platine pour booster ta mine.
+    </div>
+  </div>
+
+  <a id="back-link" href="index.html">⬅ Retour au Hub</a>
+
+  <script>
+    // --- Utilitaires nombre court (K, M, B) [web:272][web:269] ---
+    function formatNumber(num) {
+      if (num < 1000) return num.toString();
+      const units = [
+        { v: 1e12, s: "T" },
+        { v: 1e9, s: "B" },
+        { v: 1e6, s: "M" },
+        { v: 1e3, s: "K" },
+      ];
+      for (const u of units) {
+        if (num >= u.v) {
+          return (num / u.v).toFixed(1).replace(/.0$/, "") + u.s;
+        }
+      }
+      return num.toString();
+    }
+
+    // --- État de jeu basique ---
+    const state = {
+      mineCoin: 0,
+      silverCoin: 0,
+      platCoin: 0,
+      storedMine: 0,
+      shafts: [
+        // Étages : prod/s, stockage max, niveau, locked?
+        { level: 1, baseProd: 1, prodPerLevel: 1, storage: 0, storageCap: 20, unlocked: true },
+        { level: 0, baseProd: 3, prodPerLevel: 2, storage: 0, storageCap: 60, unlocked: false },
+        { level: 0, baseProd: 8, prodPerLevel: 4, storage: 0, storageCap: 120, unlocked: false },
+      ]
+    };
+
+    // --- Récupération des éléments DOM ---
+    const mineCoinEl   = document.getElementById("mineCoinAmount");
+    const silverCoinEl = document.getElementById("silverCoinAmount");
+    const platCoinEl   = document.getElementById("platCoinAmount");
+    const storedMineEl = document.getElementById("storedMine");
+
+    const shaftEls = Array.from(document.querySelectorAll(".shaft"));
+
+    const collectBtn = document.getElementById("collect-btn");
+
+    // --- Fonctions d'upgrade & coûts ---
+    function getMineUpgradeCost(index) {
+      const shaft = state.shafts[index];
+      if (index === 0) {
+        return 15 * shaft.level;
+      } else if (index === 1) {
+        // si pas encore unlock, coût en Mine Coin
+        if (!shaft.unlocked) return 250;
+        return 120 * shaft.level;
+      } else {
+        if (!shaft.unlocked) return 2000; // en Silver Coin
+        return 500 * shaft.level;
+      }
+    }
+
+    function updateUI() {
+      mineCoinEl.textContent   = formatNumber(state.mineCoin);
+      silverCoinEl.textContent = formatNumber(state.silverCoin);
+      platCoinEl.textContent   = formatNumber(state.platCoin);
+      storedMineEl.textContent = formatNumber(state.storedMine);
+
+      shaftEls.forEach((el, i) => {
+        const shaft = state.shafts[i];
+        const levelEl   = el.querySelector(".shaft-level-val");
+        const prodEl    = el.querySelector(".shaft-prod-val");
+        const storValEl = el.querySelector(".shaft-storage-val");
+        const storCapEl = el.querySelector(".shaft-storage-cap");
+        const barFillEl = el.querySelector(".shaft-bar-fill");
+        const btn       = el.querySelector(".upgrade-btn");
+        const costEl    = el.querySelector(".upgrade-cost-val");
+        const storageLabel = el.querySelector(".shaft-storage span");
+
+        if (shaft.unlocked) {
+          levelEl.textContent = shaft.level;
+          const prod = shaft.baseProd + shaft.prodPerLevel * (shaft.level - 1);
+          prodEl.textContent = prod.toFixed(0);
+          storValEl.textContent = formatNumber(shaft.storage);
+          storCapEl.textContent = formatNumber(shaft.storageCap);
+          const ratio = Math.min(1, shaft.storage / shaft.storageCap || 0);
+          barFillEl.style.width = (ratio * 100).toFixed(0) + "%";
+
+          if (i === 0) {
+            storageLabel.textContent = "Mine Coins générés";
+            btn.textContent = "Upgrade";
+            costEl.textContent = formatNumber(getMineUpgradeCost(i)) + " Mine Coin";
+          } else if (i === 1) {
+            storageLabel.textContent = "Zone Silver (Mine → Silver)";
+            btn.textContent = "Upgrade";
+            costEl.textContent = formatNumber(getMineUpgradeCost(i)) + " Mine Coin";
+          } else if (i === 2) {
+            storageLabel.textContent = "Zone Platine (Silver → Platine)";
+            btn.textContent = "Upgrade";
+            costEl.textContent = formatNumber(getMineUpgradeCost(i)) + " Silver Coin";
+          }
+        } else {
+          // locked
+          levelEl.textContent = 0;
+          prodEl.textContent = 0;
+          storValEl.textContent = 0;
+          storCapEl.textContent = 0;
+          barFillEl.style.width = "0%";
+
+          if (i === 1) {
+            storageLabel.textContent = "Silver zone (lockée)";
+            btn.textContent = "Unlock";
+            costEl.textContent = formatNumber(getMineUpgradeCost(i)) + " Mine Coin";
+          } else if (i === 2) {
+            storageLabel.textContent = "Platine zone (lockée)";
+            btn.textContent = formatNumber(getMineUpgradeCost(i)) + " Silver Coin";
+          }
+        }
+      });
+    }
+
+    function tick(deltaSeconds) {
+      // Génération automatique
+      state.shafts.forEach((shaft, index) => {
+        if (!shaft.unlocked || shaft.level <= 0) return;
+        const prodPerSec = shaft.baseProd + shaft.prodPerLevel * (shaft.level - 1);
+        shaft.storage += prodPerSec * deltaSeconds;
+        if (shaft.storage > shaft.storageCap) {
+          shaft.storage = shaft.storageCap;
+        }
+      });
+
+      // Conversion simple interne : étage 2 consomme Mine -> donne Silver
+      const silverShaft = state.shafts[1];
+      if (silverShaft.unlocked && silverShaft.level > 0) {
+        const toConvert = Math.min(silverShaft.storage, state.shafts[0].storage);
+        if (toConvert > 0) {
+          state.shafts[0].storage -= toConvert;
+          silverShaft.storage -= toConvert;
+          state.silverCoin += toConvert * 0.05; // ratio simple
+        }
+      }
+
+      // Conversion Platine : étage 3 consomme Silver
+      const platShaft = state.shafts[2];
+      if (platShaft.unlocked && platShaft.level > 0) {
+        const convertSilver = Math.min(platShaft.storage, state.silverCoin);
+        if (convertSilver > 0) {
+          state.silverCoin -= convertSilver;
+          platShaft.storage -= convertSilver;
+          state.platCoin += convertSilver * 0.02;
+        }
+      }
+
+      // Coffre = somme des Mine Coins bruts (étage 0)
+      state.storedMine = state.shafts[0].storage;
+
+      updateUI();
+    }
+
+    // --- Collect ---
+    collectBtn.addEventListener("click", () => {
+      const gained = Math.floor(state.storedMine);
+      if (gained <= 0) return;
+      state.mineCoin += gained;
+      state.shafts[0].storage -= gained;
+      if (state.shafts[0].storage < 0) state.shafts[0].storage = 0;
+      state.storedMine = state.shafts[0].storage;
+      updateUI();
+    });
+
+    // --- Upgrades / Unlocks ---
+    shaftEls.forEach((el, i) => {
+      const btn = el.querySelector(".upgrade-btn");
+      btn.addEventListener("click", () => {
+        const shaft = state.shafts[i];
+        const cost = getMineUpgradeCost(i);
+
+        if (!shaft.unlocked) {
+          // Unlock
+          if (i === 1) {
+            if (state.mineCoin < cost) return;
+            state.mineCoin -= cost;
+            shaft.unlocked = true;
+            shaft.level = 1;
+            shaft.storageCap = 60;
+          } else if (i === 2) {
+            if (state.silverCoin < cost) return;
+            state.silverCoin -= cost;
+            shaft.unlocked = true;
+            shaft.level = 1;
+            shaft.storageCap = 120;
+          }
+        } else {
+          // Upgrade
+          if (i === 0 || i === 1) {
+            if (state.mineCoin < cost) return;
+            state.mineCoin -= cost;
+            shaft.level += 1;
+            shaft.storageCap += 15;
+          } else if (i === 2) {
+            if (state.silverCoin < cost) return;
+            state.silverCoin -= cost;
+            shaft.level += 1;
+            shaft.storageCap += 30;
+          }
+        }
+        updateUI();
+      });
+    });
+
+    // --- Boucle de jeu (idle) [web:264] ---
+    let lastTime = performance.now();
+    function loop(now) {
+      const delta = (now - lastTime) / 1000;
+      lastTime = now;
+      tick(delta);
+      requestAnimationFrame(loop);
+    }
+
+    updateUI();
+    requestAnimationFrame(loop);
+  </script>
+</body>
+    </html>
