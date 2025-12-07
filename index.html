@@ -125,6 +125,18 @@
         drop-shadow(0 14px 20px rgba(0, 0, 0, 0.9));
     }
 
+    .frog-style-2 img {
+      filter:
+        drop-shadow(0 0 10px rgba(59, 130, 246, 0.9))
+        drop-shadow(0 16px 22px rgba(0, 0, 0, 0.9));
+    }
+    .frog-style-3 img {
+      filter:
+        drop-shadow(0 0 14px rgba(34, 197, 94, 1))
+        drop-shadow(0 0 24px rgba(250, 204, 21, 0.9))
+        drop-shadow(0 18px 24px rgba(0, 0, 0, 0.95));
+    }
+
     @keyframes frogJump {
       0%   { transform: translate(-50%, 0) scale(1); }
       20%  { transform: translate(-50%, -28px) scale(1.03); }
@@ -300,6 +312,35 @@
   <div id="disclaimer">Pepe USD Game est un prototype ludique. Aucun gain réel, pas un conseil financier.</div>
 
   <script>
+    // Lecture/sauvegarde état global
+    function loadState() {
+      const raw = localStorage.getItem('pepeGameState');
+      if (!raw) {
+        return {
+          points: 0,
+          tapValue: 1,
+          regenSeconds: 30,
+          styleLevel: 1
+        };
+      }
+      try {
+        const data = JSON.parse(raw);
+        return {
+          points: data.points ?? 0,
+          tapValue: data.tapValue ?? 1,
+          regenSeconds: data.regenSeconds ?? 30,
+          styleLevel: data.styleLevel ?? 1
+        };
+      } catch (e) {
+        return { points: 0, tapValue: 1, regenSeconds: 30, styleLevel: 1 };
+      }
+    }
+
+    function saveState() {
+      const state = { points, tapValue, regenSeconds, styleLevel };
+      localStorage.setItem('pepeGameState', JSON.stringify(state));
+    }
+
     let points = 0;
     let taps = 0;
     let level = 1;
@@ -309,7 +350,10 @@
     let tapValue = 1;
     let maxEnergy = 100;
     let energy = maxEnergy;
-    let regenMs = 30000;
+    let regenSeconds = 30;
+    let regenMs = regenSeconds * 1000;
+
+    let styleLevel = 1;
 
     const coffreTarget = 200;
     const tapsTarget = 100;
@@ -343,6 +387,20 @@
     const missionTapsEl = document.getElementById('mission-taps');
     const missionStreakEl = document.getElementById('mission-streak');
     const buffTextEl = document.getElementById('buff-text');
+
+    // Charger l'état persistant
+    (function initFromStorage() {
+      const s = loadState();
+      points = s.points;
+      tapValue = s.tapValue;
+      regenSeconds = s.regenSeconds;
+      styleLevel = s.styleLevel;
+      regenMs = regenSeconds * 1000;
+
+      frogEl.classList.remove('frog-style-2', 'frog-style-3');
+      if (styleLevel === 2) frogEl.classList.add('frog-style-2');
+      if (styleLevel >= 3) frogEl.classList.add('frog-style-3');
+    })();
 
     function updateTheme() {
       bodyEl.classList.remove('theme-night', 'theme-dawn', 'theme-day');
@@ -394,6 +452,10 @@
       } else {
         frogEl.classList.remove('frog-buff');
       }
+
+      frogEl.classList.remove('frog-style-2', 'frog-style-3');
+      if (styleLevel === 2) frogEl.classList.add('frog-style-2');
+      if (styleLevel >= 3) frogEl.classList.add('frog-style-3');
 
       updateTheme();
     }
@@ -465,6 +527,7 @@
 
       showFloatingPlus(gain);
       triggerJump();
+      saveState();
       updateUI();
     }
 
