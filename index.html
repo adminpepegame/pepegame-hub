@@ -3,116 +3,149 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
-  <title>PEPEGAME - Tap to Earn</title>
+  <title>PEPEGAME - Tap Ninja Frog</title>
   <style>
     * { box-sizing: border-box; }
 
     body {
       margin: 0;
       min-height: 100vh;
-      background:
-        radial-gradient(circle at top, #151b3f 0%, #050816 55%, #02020a 100%);
-      color: #f5f5f5;
+      color: #f9fafb;
       font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
       text-align: center;
-      padding: 20px 10px 96px;
+      padding: 16px 10px 112px;
       display: flex;
       flex-direction: column;
       align-items: center;
+      transition: background 0.6s ease;
     }
 
-    body::before,
-    body::after {
-      content: "";
-      position: fixed;
-      border-radius: 50%;
-      background: radial-gradient(circle, rgba(255, 215, 0, 0.25), transparent 60%);
-      pointer-events: none;
-      z-index: -1;
-      filter: blur(1px);
+    /* Thèmes nuit / aube / jour */
+    body.theme-night {
+      background:
+        radial-gradient(circle at top, #020617 0%, #020617 40%, #020617 100%);
     }
-    body::before {
-      width: 140px;
-      height: 140px;
-      top: 10%;
-      left: 8%;
+    body.theme-dawn {
+      background:
+        linear-gradient(to top, #0f172a 0%, #1e293b 35%, #f97316 70%, #facc15 100%);
     }
-    body::after {
-      width: 180px;
-      height: 180px;
-      bottom: 5%;
-      right: 4%;
+    body.theme-day {
+      background:
+        linear-gradient(to top, #0ea5e9 0%, #38bdf8 35%, #facc15 80%, #fef9c3 100%);
+      color: #0f172a;
     }
 
     #top-bar {
       font-size: 12px;
       opacity: 0.85;
-      margin-bottom: 8px;
-    }
-
-    /* Logo */
-    #logo-wrapper {
-      margin-top: 6px;
-      margin-bottom: 8px;
-    }
-    #logo-coin {
-      width: 96px;
-      height: 96px;
-      margin: 0 auto;
-      border-radius: 50%;
-      background: radial-gradient(circle at 30% 20%, #ffe27a, #f5b700 55%, #b27a00 100%);
-      box-shadow: 0 0 18px rgba(0, 0, 0, 0.8);
-      position: relative;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 5px;
-    }
-    #logo-coin-inner {
-      width: 100%;
-      height: 100%;
-      border-radius: 50%;
-      overflow: hidden;
-      background: radial-gradient(circle at 30% 20%, #020617, #0f172a 70%);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-    #logo-coin-inner img {
-      width: 115%;
-      height: 115%;
-      object-fit: cover;
-      object-position: center;
-      display: block;
-    }
-
-    #logo-text {
-      font-size: 10px;
-      margin-top: 4px;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      opacity: 0.9;
-      color: #facc15;
+      margin-bottom: 4px;
     }
 
     h1 {
-      margin: 6px 0 4px;
+      margin: 4px 0 2px;
       font-size: 20px;
     }
     #subtitle {
       font-size: 12px;
-      opacity: 0.8;
-      margin-bottom: 12px;
+      opacity: 0.85;
+      margin-bottom: 8px;
     }
 
-    /* Barre de niveau */
+    /* Zone de jeu */
+    #game-area {
+      position: relative;
+      width: 100%;
+      max-width: 420px;
+      height: 260px;
+      margin-top: 8px;
+      margin-bottom: 10px;
+      border-radius: 18px;
+      overflow: hidden;
+      background: radial-gradient(circle at 20% 0%, rgba(248, 250, 252, 0.12), transparent 55%);
+      box-shadow: 0 14px 32px rgba(15, 23, 42, 0.9);
+      border: 1px solid rgba(148, 163, 184, 0.4);
+      touch-action: manipulation;
+    }
+
+    #sky-layer {
+      position: absolute;
+      inset: 0;
+      z-index: 1;
+    }
+
+    #ground {
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      height: 70px;
+      background:
+        linear-gradient(to top, rgba(15, 23, 42, 0.95), rgba(30, 64, 175, 0.9));
+      box-shadow: 0 -6px 14px rgba(0, 0, 0, 0.8);
+      z-index: 2;
+    }
+
+    body.theme-day #ground {
+      background:
+        linear-gradient(to top, #166534, #22c55e);
+      box-shadow: 0 -4px 12px rgba(22, 163, 74, 0.8);
+    }
+
+    #ground-line {
+      position: absolute;
+      top: 8px;
+      left: 6%;
+      right: 6%;
+      height: 4px;
+      border-radius: 999px;
+      background: linear-gradient(90deg, #facc15, #f97316);
+      opacity: 0.9;
+    }
+
+    #frog {
+      position: absolute;
+      bottom: 70px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 96px;
+      height: 96px;
+      z-index: 3;
+    }
+
+    #frog img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      display: block;
+      filter: drop-shadow(0 12px 18px rgba(0, 0, 0, 0.9));
+      transition: filter 0.2s ease;
+    }
+
+    .frog-buff img {
+      filter:
+        drop-shadow(0 0 12px rgba(34, 197, 94, 0.8))
+        drop-shadow(0 14px 20px rgba(0, 0, 0, 0.9));
+    }
+
+    @keyframes frogJump {
+      0%   { transform: translate(-50%, 0) scale(1); }
+      20%  { transform: translate(-50%, -28px) scale(1.03); }
+      50%  { transform: translate(-50%, -44px) scale(1.05) rotate(-2deg); }
+      80%  { transform: translate(-50%, -18px) scale(1.02); }
+      100% { transform: translate(-50%, 0) scale(1); }
+    }
+
+    .jumping {
+      animation: frogJump 0.35s ease-out;
+    }
+
     #level-bar-container {
       width: 82%;
       max-width: 340px;
       height: 10px;
       border-radius: 999px;
-      background: rgba(255, 255, 255, 0.08);
-      margin: 0 auto 6px;
+      background: rgba(15, 23, 42, 0.6);
+      margin: 0 auto 4px;
       overflow: hidden;
     }
     #level-bar-fill {
@@ -124,24 +157,24 @@
     #level-text {
       font-size: 12px;
       opacity: 0.9;
-      margin-bottom: 8px;
+      margin-bottom: 4px;
     }
 
     #buff-text {
       font-size: 11px;
       color: #facc15;
-      margin-bottom: 14px;
+      margin-bottom: 8px;
       min-height: 14px;
     }
 
     #points {
-      font-size: 28px;
-      margin: 6px 0 6px;
+      font-size: 26px;
+      margin: 4px 0 4px;
     }
     #next-target {
       font-size: 13px;
       opacity: 0.9;
-      margin-bottom: 10px;
+      margin-bottom: 8px;
     }
 
     #tap-button {
@@ -152,13 +185,14 @@
       font-size: 20px;
       border-radius: 999px;
       cursor: pointer;
-      box-shadow: 0 8px 22px rgba(0, 0, 0, 0.6);
+      box-shadow: 0 8px 22px rgba(0, 0, 0, 0.7);
       transition: transform 0.06s ease-out, box-shadow 0.12s ease-out, filter 0.12s ease-out;
       touch-action: manipulation;
+      margin-bottom: 6px;
     }
     #tap-button:active {
       transform: translateY(1px) scale(0.97);
-      box-shadow: 0 3px 12px rgba(0, 0, 0, 0.7);
+      box-shadow: 0 3px 12px rgba(0, 0, 0, 0.8);
       filter: brightness(0.95);
     }
     #tap-button:disabled {
@@ -169,25 +203,23 @@
     }
 
     #energy-text {
-      margin-top: 10px;
-      font-size: 14px;
+      font-size: 13px;
       opacity: 0.9;
     }
 
     #floating-plus {
       position: relative;
-      height: 24px;
-      margin-top: 6px;
+      height: 22px;
+      margin-top: 4px;
       font-size: 16px;
       color: #4ade80;
       opacity: 0;
       transition: opacity 0.2s ease-out, transform 0.2s ease-out;
     }
 
-    /* Panneau upgrades + missions */
     #bottom-panel {
       position: fixed;
-      bottom: 14px;
+      bottom: 12px;
       left: 50%;
       transform: translateX(-50%);
       width: 94%;
@@ -203,7 +235,7 @@
       padding: 8px 12px;
       font-size: 12px;
       text-align: left;
-      box-shadow: 0 10px 24px rgba(0, 0, 0, 0.7);
+      box-shadow: 0 10px 24px rgba(0, 0, 0, 0.9);
       border: 1px solid rgba(59, 130, 246, 0.6);
     }
     #upgrades-title {
@@ -245,7 +277,7 @@
       padding: 8px 12px;
       font-size: 12px;
       text-align: left;
-      box-shadow: 0 10px 24px rgba(0, 0, 0, 0.7);
+      box-shadow: 0 10px 24px rgba(0, 0, 0, 0.8);
       border: 1px solid rgba(148, 163, 184, 0.5);
     }
     #missions-title {
@@ -260,26 +292,27 @@
     }
 
     #disclaimer {
-      margin-top: 10px;
+      margin-top: 6px;
       font-size: 10px;
       opacity: 0.7;
     }
   </style>
 </head>
-<body>
+<body class="theme-night">
   <div id="top-bar">Invité #1234 · Niveau <span id="level-label">1</span></div>
 
-  <div id="logo-wrapper">
-    <div id="logo-coin">
-      <div id="logo-coin-inner">
-        <img src="image-6.png" alt="Logo Crypto Win Frog" />
-      </div>
-    </div>
-    <div id="logo-text">Pepe USD · Game</div>
-  </div>
+  <h1>PEPEGAME – Tap Ninja Frog</h1>
+  <div id="subtitle">Fais sauter ta grenouille ninja, fais passer la nuit au jour (prototype local)</div>
 
-  <h1>PEPEGAME – Tap PEPE</h1>
-  <div id="subtitle">Farm tes PEPE Points, upgrades & bonus x2 (prototype local)</div>
+  <div id="game-area">
+    <div id="sky-layer"></div>
+    <div id="frog">
+      <img src="image-7.png" alt="Grenouille Ninja Crypto Win" />
+    </div>
+    <div id="ground">
+      <div id="ground-line"></div>
+    </div>
+  </div>
 
   <div id="level-bar-container">
     <div id="level-bar-fill"></div>
@@ -288,7 +321,7 @@
   <div id="buff-text"></div>
 
   <div id="points">Points : 0</div>
-  <div id="next-target">Prochain coffre à 200 points</div>
+  <div id="next-target">Prochain coffre à 200 points (jour complet à 500+ points)</div>
 
   <button id="tap-button">TAP PEPE 🐸</button>
   <div id="energy-text">Énergie : 100 / 100</div>
@@ -300,7 +333,7 @@
     <div id="upgrades">
       <div id="upgrades-title">Upgrades (points locaux)</div>
       <div class="upgrade-row">
-        <div class="upgrade-label">+1 point par tap (niveau <span id="lvl-tap">1</span>)</div>
+        <div class="upgrade-label">+1 point par saut (niveau <span id="lvl-tap">1</span>)</div>
         <button class="upgrade-btn" id="btn-up-tap">Coût : 50</button>
       </div>
       <div class="upgrade-row">
@@ -308,7 +341,7 @@
         <button class="upgrade-btn" id="btn-up-energy">Coût : 80</button>
       </div>
       <div class="upgrade-row">
-        <div class="upgrade-label">Regen plus rapide (-5 s) </div>
+        <div class="upgrade-label">Regen plus rapide (-5 s)</div>
         <button class="upgrade-btn" id="btn-up-regen">Coût : 60</button>
       </div>
     </div>
@@ -316,45 +349,43 @@
     <div id="missions">
       <div id="missions-title">Missions du jour</div>
       <div class="mission-line" id="mission-coffre">• Gagner 200 points → Coffre bronze</div>
-      <div class="mission-line" id="mission-taps">• Faire 100 taps → Boost x2 30s</div>
-      <div class="mission-line" id="mission-streak">• 25 taps d'affilée sans pause → Mini bonus x2 10s</div>
+      <div class="mission-line" id="mission-taps">• Faire 100 sauts → Boost x2 30s</div>
+      <div class="mission-line" id="mission-streak">• 25 sauts d'affilée → Mini bonus x2 10s</div>
     </div>
   </div>
 
   <script>
-    // Stats de base
     let points = 0;
     let taps = 0;
     let level = 1;
     let xp = 0;
     const xpPerLevel = 100;
 
-    // Upgrades
     let tapValue = 1;
     let tapUpgradeLevel = 1;
 
     let maxEnergy = 100;
     let energy = maxEnergy;
-    let baseRegenMs = 30000; // 30s au début
-    let regenMs = baseRegenMs;
+    let regenMs = 30000;
 
     const coffreTarget = 200;
     const tapsTarget = 100;
     const streakTarget = 25;
     let streak = 0;
     let lastTapTime = 0;
-    const streakTimeoutMs = 4000; // si tu arrêtes +4s, la série casse
+    const streakTimeoutMs = 4000;
 
-    // Buff x2
     let isBuffActive = false;
     let buffMultiplier = 1;
     let buffEndTime = 0;
     let buffInterval = null;
 
-    // Points → XP
     const pointsPerXp = 10;
 
-    // Elements
+    const bodyEl = document.body;
+    const frogEl = document.getElementById('frog');
+    const gameAreaEl = document.getElementById('game-area');
+
     const pointsEl = document.getElementById('points');
     const tapBtn = document.getElementById('tap-button');
     const levelLabelEl = document.getElementById('level-label');
@@ -376,6 +407,17 @@
     const btnUpEnergy = document.getElementById('btn-up-energy');
     const btnUpRegen = document.getElementById('btn-up-regen');
 
+    function updateTheme() {
+      bodyEl.classList.remove('theme-night', 'theme-dawn', 'theme-day');
+      if (points >= 500) {
+        bodyEl.classList.add('theme-day');
+      } else if (points >= 200) {
+        bodyEl.classList.add('theme-dawn');
+      } else {
+        bodyEl.classList.add('theme-night');
+      }
+    }
+
     function updateUI() {
       pointsEl.textContent = 'Points : ' + points;
       xpValueEl.textContent = xp;
@@ -391,21 +433,21 @@
 
       const pointsToCoffre = Math.max(0, coffreTarget - points);
       if (pointsToCoffre === 0) {
-        nextTargetEl.textContent = 'Coffre bronze débloqué (visuel) !';
+        nextTargetEl.textContent = 'Coffre bronze débloqué (visuel) · Jour complet à 500+ points';
       } else {
-        nextTargetEl.textContent = 'Prochain coffre : ' + pointsToCoffre + ' points restants';
+        nextTargetEl.textContent = 'Prochain coffre : ' + pointsToCoffre + ' points restants (jour à 500+)';
       }
 
       const tapsRemaining = Math.max(0, tapsTarget - taps);
       missionTapsEl.textContent =
-        '• Faire 100 taps → Boost x2 30s (reste ' + tapsRemaining + ')';
+        '• Faire 100 sauts → Boost x2 30s (reste ' + tapsRemaining + ')';
 
       missionCoffreEl.textContent =
         '• Gagner 200 points → Coffre bronze (reste ' + pointsToCoffre + ')';
 
       const streakRemaining = Math.max(0, streakTarget - streak);
       missionStreakEl.textContent =
-        '• Série de 25 taps (reste ' + streakRemaining + ') → Mini bonus x2 10s';
+        '• Série de 25 sauts (reste ' + streakRemaining + ') → Mini bonus x2 10s';
 
       energyTextEl.textContent = 'Énergie : ' + energy + ' / ' + maxEnergy;
       tapBtn.disabled = energy <= 0;
@@ -415,6 +457,14 @@
       btnUpTap.disabled = points < 50;
       btnUpEnergy.disabled = points < 80;
       btnUpRegen.disabled = points < 60;
+
+      if (isBuffActive) {
+        frogEl.classList.add('frog-buff');
+      } else {
+        frogEl.classList.remove('frog-buff');
+      }
+
+      updateTheme();
     }
 
     function startBuff(durationMs, label) {
@@ -432,8 +482,17 @@
           buffMultiplier = 1;
           buffTextEl.textContent = '';
           clearInterval(buffInterval);
+          updateUI();
         }
       }, 200);
+
+      updateUI();
+    }
+
+    function triggerJump() {
+      frogEl.classList.remove('jumping');
+      void frogEl.offsetWidth;
+      frogEl.classList.add('jumping');
     }
 
     function handleTap() {
@@ -463,19 +522,18 @@
         alert('LEVEL UP ! Niveau ' + level);
       }
 
-      // Mission taps 100 → gros buff 30s
       if (taps === tapsTarget) {
-        startBuff(30000, '100 taps');
+        startBuff(30000, '100 sauts');
         alert('Boost x2 pendant 30s !');
       }
 
-      // Série 25 taps → mini buff 10s
       if (streak === streakTarget) {
         startBuff(10000, 'série 25');
         alert('Mini bonus x2 pendant 10s !');
       }
 
       showFloatingPlus(gain);
+      triggerJump();
       updateUI();
     }
 
@@ -487,18 +545,16 @@
       setTimeout(() => {
         floatingPlusEl.style.opacity = '0';
         floatingPlusEl.style.transform = 'translateY(-10px)';
-      }, 200);
+      }, 220);
     }
 
-    // Regen énergie
     setInterval(() => {
       if (energy < maxEnergy) {
         energy += 1;
         updateUI();
       }
-    }, () => regenMs);
+    }, regenMs);
 
-    // Upgrades
     btnUpTap.addEventListener('click', () => {
       if (points < 50) return;
       points -= 50;
@@ -518,12 +574,13 @@
     btnUpRegen.addEventListener('click', () => {
       if (points < 60) return;
       points -= 60;
-      regenMs = Math.max(10000, regenMs - 5000); // minimum 10s
+      regenMs = Math.max(10000, regenMs - 5000);
       alert('Regen énergie améliorée !');
       updateUI();
     });
 
     tapBtn.addEventListener('click', handleTap);
+    gameAreaEl.addEventListener('click', handleTap);
 
     updateUI();
   </script>
