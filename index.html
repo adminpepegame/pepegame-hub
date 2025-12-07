@@ -38,55 +38,63 @@
   <button id="tap-button">TAP PEPE 🐸</button>
 
   <script>
-      <script>
-    let points = 0;
-    let energy = 100;
-    const maxEnergy = 100;
+    <script>
+    // Attendre que la page soit chargée
+    window.addEventListener('DOMContentLoaded', () => {
+      let points = 0;
+      let energy = 100;
+      const maxEnergy = 100;
 
-    const pointsEl = document.getElementById('points');
-    const btn = document.getElementById('tap-button');
+      const pointsEl = document.getElementById('points');
+      const btn = document.getElementById('tap-button');
 
-    // Création d'un affichage d'énergie
-    const energyEl = document.createElement('div');
-    energyEl.id = 'energy';
-    energyEl.style.marginTop = '10px';
-    energyEl.style.fontSize = '18px';
-    document.body.insertBefore(energyEl, btn);
-    updateEnergyText();
+      if (!pointsEl || !btn) {
+        console.error('Elements non trouvés');
+        return;
+      }
 
-    btn.addEventListener('click', () => {
-      if (energy <= 0) return; // plus d'énergie, pas de tap
-
-      points += 1;
-      energy -= 1;
-      pointsEl.textContent = 'Points : ' + points;
+      // Création d'un affichage d'énergie
+      const energyEl = document.createElement('div');
+      energyEl.id = 'energy';
+      energyEl.style.marginTop = '10px';
+      energyEl.style.fontSize = '18px';
+      document.body.insertBefore(energyEl, btn);
       updateEnergyText();
-      updateButtonState();
-    });
 
-    // Recharge automatique : +1 énergie toutes les 30 secondes
-    setInterval(() => {
-      if (energy < maxEnergy) {
-        energy += 1;
+      btn.addEventListener('click', () => {
+        if (energy <= 0) return;
+
+        points += 1;
+        energy -= 1;
+        pointsEl.textContent = 'Points : ' + points;
         updateEnergyText();
         updateButtonState();
-      }
-    }, 30000);
+      });
 
-    function updateEnergyText() {
-      energyEl.textContent = 'Énergie : ' + energy + ' / ' + maxEnergy;
-    }
+      // Recharge automatique : +1 énergie toutes les 30 secondes
+      setInterval(() => {
+        if (energy < maxEnergy) {
+          energy += 1;
+          updateEnergyText();
+          updateButtonState();
+        }
+      }, 30000);
 
-    function updateButtonState() {
-      if (energy <= 0) {
-        btn.disabled = true;
-        btn.textContent = 'Plus d’énergie 💤';
-      } else {
-        btn.disabled = false;
-        btn.textContent = 'TAP PEPE 🐸';
+      function updateEnergyText() {
+        energyEl.textContent = 'Énergie : ' + energy + ' / ' + maxEnergy;
       }
-    }
-  </script>
+
+      function updateButtonState() {
+        if (energy <= 0) {
+          btn.disabled = true;
+          btn.textContent = 'Plus d’énergie 💤';
+        } else {
+          btn.disabled = false;
+          btn.textContent = 'TAP PEPE 🐸';
+        }
+      }
+    });
+  </script>    
 
 </body>
 </html>
