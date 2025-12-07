@@ -4,27 +4,152 @@
   <meta charset="UTF-8" />
   <title>PEPEGAME - Tap to Earn</title>
   <style>
+    * { box-sizing: border-box; }
+
     body {
-      background: radial-gradient(circle at top, #101635 0%, #02030a 60%);
+      margin: 0;
+      min-height: 100vh;
+      background:
+        radial-gradient(circle at top, #151b3f 0%, #050816 55%, #02020a 100%);
       color: #f5f5f5;
-      font-family: Arial, sans-serif;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
       text-align: center;
-      padding: 30px 10px;
+      padding: 20px 10px 80px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
     }
-    h1 { margin-bottom: 4px; font-size: 20px; }
-    #subtitle {
-      font-size: 12px;
-      opacity: 0.8;
-      margin-bottom: 16px;
+
+    /* Décor pièces flottantes très léger */
+    body::before,
+    body::after {
+      content: "";
+      position: fixed;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(255, 215, 0, 0.25), transparent 60%);
+      pointer-events: none;
+      z-index: -1;
+      filter: blur(1px);
     }
+    body::before {
+      width: 140px;
+      height: 140px;
+      top: 10%;
+      left: 8%;
+    }
+    body::after {
+      width: 180px;
+      height: 180px;
+      bottom: 5%;
+      right: 4%;
+    }
+
     #top-bar {
       font-size: 12px;
       opacity: 0.85;
       margin-bottom: 8px;
     }
+
+    /* Logo grenouille-coin (pur CSS pour l’instant) */
+    #logo-wrapper {
+      margin-top: 6px;
+      margin-bottom: 8px;
+    }
+    #logo-coin {
+      width: 80px;
+      height: 80px;
+      margin: 0 auto;
+      border-radius: 50%;
+      background: radial-gradient(circle at 30% 20%, #ffe27a, #f5b700 55%, #b27a00 100%);
+      box-shadow: 0 0 18px rgba(0, 0, 0, 0.8);
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    #logo-coin::before {
+      content: "";
+      position: absolute;
+      inset: 6px;
+      border-radius: 50%;
+      background: radial-gradient(circle at 30% 20%, #1ddf7b, #0c9c4c 70%);
+    }
+    /* Tête grenouille stylisée */
+    #frog-face {
+      position: relative;
+      width: 40px;
+      height: 26px;
+      border-radius: 50px 50px 40px 40px;
+      background: #1cd96c;
+      top: -4px;
+      box-shadow: 0 2px 0 rgba(0, 0, 0, 0.35);
+    }
+    #frog-face::before,
+    #frog-face::after {
+      content: "";
+      position: absolute;
+      top: -9px;
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: #1cd96c;
+      box-shadow: 0 2px 0 rgba(0, 0, 0, 0.35);
+    }
+    #frog-face::before { left: -3px; }
+    #frog-face::after  { right: -3px; }
+
+    .frog-eye {
+      position: absolute;
+      top: -5px;
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: #ffffff;
+    }
+    .frog-eye.left  { left: 1px; }
+    .frog-eye.right { right: 1px; }
+    .frog-eye span {
+      display: block;
+      width: 5px;
+      height: 5px;
+      margin: 2px auto 0;
+      border-radius: 50%;
+      background: #111827;
+    }
+
+    #frog-mouth {
+      position: absolute;
+      bottom: 4px;
+      left: 50%;
+      width: 22px;
+      height: 8px;
+      border-radius: 0 0 12px 12px;
+      border-bottom: 2px solid #0b6c3b;
+      transform: translateX(-50%);
+    }
+
+    #logo-text {
+      font-size: 10px;
+      margin-top: 4px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      opacity: 0.9;
+      color: #facc15;
+    }
+
+    h1 {
+      margin: 6px 0 4px;
+      font-size: 20px;
+    }
+    #subtitle {
+      font-size: 12px;
+      opacity: 0.8;
+      margin-bottom: 12px;
+    }
+
     #level-bar-container {
-      width: 80%;
-      max-width: 320px;
+      width: 82%;
+      max-width: 340px;
       height: 10px;
       border-radius: 999px;
       background: rgba(255, 255, 255, 0.08);
@@ -34,86 +159,112 @@
     #level-bar-fill {
       height: 100%;
       width: 0%;
-      background: linear-gradient(90deg, #27ae60, #2ecc71);
+      background: linear-gradient(90deg, #22c55e, #a3e635);
       transition: width 0.2s ease-out;
     }
     #level-text {
       font-size: 12px;
       opacity: 0.9;
-      margin-bottom: 18px;
+      margin-bottom: 16px;
     }
+
     #points {
       font-size: 28px;
-      margin: 10px 0 8px;
+      margin: 6px 0 6px;
     }
     #next-target {
       font-size: 13px;
       opacity: 0.9;
       margin-bottom: 10px;
     }
+
     #tap-button {
-      background: #27ae60;
+      background: linear-gradient(135deg, #22c55e, #16a34a);
       border: none;
       color: white;
-      padding: 16px 36px;
+      padding: 16px 40px;
       font-size: 20px;
       border-radius: 999px;
       cursor: pointer;
-      box-shadow: 0 6px 18px rgba(0, 0, 0, 0.5);
-      transition: transform 0.05s ease-out, box-shadow 0.1s ease-out;
+      box-shadow: 0 8px 22px rgba(0, 0, 0, 0.6);
+      transition: transform 0.06s ease-out, box-shadow 0.12s ease-out, filter 0.12s ease-out;
     }
     #tap-button:active {
-      transform: scale(0.96);
-      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.7);
-      background: #1f8a4c;
+      transform: translateY(1px) scale(0.97);
+      box-shadow: 0 3px 12px rgba(0, 0, 0, 0.7);
+      filter: brightness(0.95);
     }
     #tap-button:disabled {
-      background: #555b68;
+      background: linear-gradient(135deg, #4b5563, #374151);
       cursor: not-allowed;
       box-shadow: none;
+      filter: grayscale(0.1);
     }
+
     #energy-text {
       margin-top: 10px;
       font-size: 14px;
       opacity: 0.9;
     }
+
     #floating-plus {
       position: relative;
       height: 24px;
       margin-top: 6px;
       font-size: 16px;
-      color: #2ecc71;
+      color: #4ade80;
       opacity: 0;
       transition: opacity 0.2s ease-out, transform 0.2s ease-out;
     }
+
     #missions {
       position: fixed;
-      bottom: 20px;
+      bottom: 18px;
       left: 50%;
       transform: translateX(-50%);
-      width: 90%;
-      max-width: 360px;
-      background: rgba(0, 0, 0, 0.4);
-      border-radius: 12px;
-      padding: 10px 12px;
+      width: 92%;
+      max-width: 380px;
+      background: rgba(15, 23, 42, 0.9);
+      border-radius: 14px;
+      padding: 10px 14px;
       font-size: 12px;
       text-align: left;
+      box-shadow: 0 10px 24px rgba(0, 0, 0, 0.7);
+      border: 1px solid rgba(148, 163, 184, 0.5);
     }
     #missions-title {
-      font-weight: bold;
+      font-weight: 600;
       margin-bottom: 4px;
+      font-size: 12px;
     }
     .mission-line {
       margin: 2px 0;
       opacity: 0.9;
+    }
+
+    #disclaimer {
+      margin-top: 10px;
+      font-size: 10px;
+      opacity: 0.7;
     }
   </style>
 </head>
 <body>
   <div id="top-bar">Invité #1234 · Niveau <span id="level-label">1</span></div>
 
-  <h1>PEPEGAME - Tap PEPE</h1>
-  <div id="subtitle">Chaque tap = +1 PEPE POINT (MVP local)</div>
+  <div id="logo-wrapper">
+    <div id="logo-coin">
+      <div id="frog-face">
+        <div class="frog-eye left"><span></span></div>
+        <div class="frog-eye right"><span></span></div>
+        <div id="frog-mouth"></div>
+      </div>
+    </div>
+    <div id="logo-text">Pepe USD · Game</div>
+  </div>
+
+  <h1>PEPEGAME – Tap PEPE</h1>
+  <div id="subtitle">Farm tes PEPE Points, prépare ton futur airdrop (prototype local)</div>
 
   <div id="level-bar-container">
     <div id="level-bar-fill"></div>
@@ -132,6 +283,8 @@
     <div class="mission-line" id="mission-coffre">• Gagner 200 points → Coffre bronze</div>
     <div class="mission-line" id="mission-taps">• Faire 100 taps → Boost x2 (visuel)</div>
   </div>
+
+  <div id="disclaimer">Pepe USD Game est un prototype ludique. Aucun gain réel, pas un conseil financier.</div>
 
   <script>
     let points = 0;
@@ -222,7 +375,6 @@
       }, 200);
     }
 
-    // Régénération d'énergie
     setInterval(() => {
       if (energy < maxEnergy) {
         energy += 1;
