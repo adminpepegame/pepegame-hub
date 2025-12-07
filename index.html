@@ -20,7 +20,6 @@
       transition: background 0.6s ease;
     }
 
-    /* Thèmes nuit / aube / jour */
     body.theme-night {
       background:
         radial-gradient(circle at top, #020617 0%, #020617 40%, #020617 100%);
@@ -51,7 +50,6 @@
       margin-bottom: 8px;
     }
 
-    /* Zone de jeu */
     #game-area {
       position: relative;
       width: 100%;
@@ -202,9 +200,22 @@
       filter: grayscale(0.1);
     }
 
+    #shop-button {
+      display: inline-block;
+      margin-top: 8px;
+      padding: 8px 18px;
+      border-radius: 999px;
+      background: linear-gradient(135deg, #3b82f6, #2563eb);
+      color: #fff;
+      font-size: 14px;
+      text-decoration: none;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.6);
+    }
+
     #energy-text {
       font-size: 13px;
       opacity: 0.9;
+      margin-top: 8px;
     }
 
     #floating-plus {
@@ -217,61 +228,10 @@
       transition: opacity 0.2s ease-out, transform 0.2s ease-out;
     }
 
-    #bottom-panel {
-      position: fixed;
-      bottom: 12px;
-      left: 50%;
-      transform: translateX(-50%);
+    #missions {
+      margin-top: 18px;
       width: 94%;
       max-width: 420px;
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-    }
-
-    #upgrades {
-      background: rgba(15, 23, 42, 0.96);
-      border-radius: 14px;
-      padding: 8px 12px;
-      font-size: 12px;
-      text-align: left;
-      box-shadow: 0 10px 24px rgba(0, 0, 0, 0.9);
-      border: 1px solid rgba(59, 130, 246, 0.6);
-    }
-    #upgrades-title {
-      font-weight: 600;
-      margin-bottom: 4px;
-      font-size: 12px;
-    }
-    .upgrade-row {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin: 2px 0;
-      gap: 6px;
-    }
-    .upgrade-label {
-      font-size: 11px;
-      opacity: 0.9;
-    }
-    .upgrade-btn {
-      font-size: 11px;
-      border-radius: 999px;
-      padding: 4px 8px;
-      border: none;
-      cursor: pointer;
-      background: linear-gradient(135deg, #3b82f6, #2563eb);
-      color: white;
-      touch-action: manipulation;
-      white-space: nowrap;
-    }
-    .upgrade-btn:disabled {
-      background: linear-gradient(135deg, #4b5563, #374151);
-      opacity: 0.6;
-      cursor: not-allowed;
-    }
-
-    #missions {
       background: rgba(15, 23, 42, 0.9);
       border-radius: 14px;
       padding: 8px 12px;
@@ -292,7 +252,7 @@
     }
 
     #disclaimer {
-      margin-top: 6px;
+      margin-top: 10px;
       font-size: 10px;
       opacity: 0.7;
     }
@@ -321,38 +281,23 @@
   <div id="buff-text"></div>
 
   <div id="points">Points : 0</div>
-  <div id="next-target">Prochain coffre à 200 points (jour complet à 500+ points)</div>
+  <div id="next-target">Prochain coffre : 199 points restants (jour à 500+)</div>
 
   <button id="tap-button">TAP PEPE 🐸</button>
+
+  <a href="shop.html" id="shop-button">Boutique 🛒</a>
+
   <div id="energy-text">Énergie : 100 / 100</div>
   <div id="floating-plus"></div>
 
-  <div id="disclaimer">Pepe USD Game est un prototype ludique. Aucun gain réel, pas un conseil financier.</div>
-
-  <div id="bottom-panel">
-    <div id="upgrades">
-      <div id="upgrades-title">Upgrades (points locaux)</div>
-      <div class="upgrade-row">
-        <div class="upgrade-label">+1 point par saut (niveau <span id="lvl-tap">1</span>)</div>
-        <button class="upgrade-btn" id="btn-up-tap">Coût : 50</button>
-      </div>
-      <div class="upgrade-row">
-        <div class="upgrade-label">+20 énergie max (actuel : <span id="lvl-energy">100</span>)</div>
-        <button class="upgrade-btn" id="btn-up-energy">Coût : 80</button>
-      </div>
-      <div class="upgrade-row">
-        <div class="upgrade-label">Regen plus rapide (-5 s)</div>
-        <button class="upgrade-btn" id="btn-up-regen">Coût : 60</button>
-      </div>
-    </div>
-
-    <div id="missions">
-      <div id="missions-title">Missions du jour</div>
-      <div class="mission-line" id="mission-coffre">• Gagner 200 points → Coffre bronze</div>
-      <div class="mission-line" id="mission-taps">• Faire 100 sauts → Boost x2 30s</div>
-      <div class="mission-line" id="mission-streak">• 25 sauts d'affilée → Mini bonus x2 10s</div>
-    </div>
+  <div id="missions">
+    <div id="missions-title">Missions du jour</div>
+    <div class="mission-line" id="mission-coffre">• Gagner 200 points → Coffre bronze</div>
+    <div class="mission-line" id="mission-taps">• Faire 100 sauts → Boost x2 30s</div>
+    <div class="mission-line" id="mission-streak">• 25 sauts d'affilée → Mini bonus x2 10s</div>
   </div>
+
+  <div id="disclaimer">Pepe USD Game est un prototype ludique. Aucun gain réel, pas un conseil financier.</div>
 
   <script>
     let points = 0;
@@ -362,8 +307,6 @@
     const xpPerLevel = 100;
 
     let tapValue = 1;
-    let tapUpgradeLevel = 1;
-
     let maxEnergy = 100;
     let energy = maxEnergy;
     let regenMs = 30000;
@@ -400,12 +343,6 @@
     const missionTapsEl = document.getElementById('mission-taps');
     const missionStreakEl = document.getElementById('mission-streak');
     const buffTextEl = document.getElementById('buff-text');
-
-    const lvlTapEl = document.getElementById('lvl-tap');
-    const lvlEnergyEl = document.getElementById('lvl-energy');
-    const btnUpTap = document.getElementById('btn-up-tap');
-    const btnUpEnergy = document.getElementById('btn-up-energy');
-    const btnUpRegen = document.getElementById('btn-up-regen');
 
     function updateTheme() {
       bodyEl.classList.remove('theme-night', 'theme-dawn', 'theme-day');
@@ -451,12 +388,6 @@
 
       energyTextEl.textContent = 'Énergie : ' + energy + ' / ' + maxEnergy;
       tapBtn.disabled = energy <= 0;
-
-      lvlTapEl.textContent = tapUpgradeLevel;
-      lvlEnergyEl.textContent = maxEnergy;
-      btnUpTap.disabled = points < 50;
-      btnUpEnergy.disabled = points < 80;
-      btnUpRegen.disabled = points < 60;
 
       if (isBuffActive) {
         frogEl.classList.add('frog-buff');
@@ -554,30 +485,6 @@
         updateUI();
       }
     }, regenMs);
-
-    btnUpTap.addEventListener('click', () => {
-      if (points < 50) return;
-      points -= 50;
-      tapUpgradeLevel += 1;
-      tapValue += 1;
-      updateUI();
-    });
-
-    btnUpEnergy.addEventListener('click', () => {
-      if (points < 80) return;
-      points -= 80;
-      maxEnergy += 20;
-      energy = maxEnergy;
-      updateUI();
-    });
-
-    btnUpRegen.addEventListener('click', () => {
-      if (points < 60) return;
-      points -= 60;
-      regenMs = Math.max(10000, regenMs - 5000);
-      alert('Regen énergie améliorée !');
-      updateUI();
-    });
 
     tapBtn.addEventListener('click', handleTap);
     gameAreaEl.addEventListener('click', handleTap);
