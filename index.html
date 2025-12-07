@@ -49,7 +49,7 @@
     #next-target {
       font-size: 13px;
       opacity: 0.9;
-      margin-bottom: 18px;
+      margin-bottom: 10px;
     }
     #tap-button {
       background: #27ae60;
@@ -67,12 +67,24 @@
       box-shadow: 0 2px 10px rgba(0, 0, 0, 0.7);
       background: #1f8a4c;
     }
+    #tap-button:disabled {
+      background: #555b68;
+      cursor: not-allowed;
+      box-shadow: none;
+    }
+    #energy-text {
+      margin-top: 10px;
+      font-size: 14px;
+      opacity: 0.9;
+    }
     #floating-plus {
       position: relative;
       height: 24px;
       margin-top: 6px;
       font-size: 16px;
       color: #2ecc71;
+      opacity: 0;
+      transition: opacity 0.2s ease-out, transform 0.2s ease-out;
     }
     #missions {
       position: fixed;
@@ -112,6 +124,7 @@
   <div id="next-target">Prochain coffre à 200 points</div>
 
   <button id="tap-button">TAP PEPE 🐸</button>
+  <div id="energy-text">Énergie : 100 / 100</div>
   <div id="floating-plus"></div>
 
   <div id="missions">
@@ -130,6 +143,10 @@
     const coffreTarget = 200;
     const tapsTarget = 100;
 
+    let energy = 100;
+    const maxEnergy = 100;
+    const energyRegenMs = 30000; // +1 énergie toutes les 30s
+
     const pointsEl = document.getElementById('points');
     const tapBtn = document.getElementById('tap-button');
     const levelLabelEl = document.getElementById('level-label');
@@ -141,6 +158,7 @@
     const floatingPlusEl = document.getElementById('floating-plus');
     const missionCoffreEl = document.getElementById('mission-coffre');
     const missionTapsEl = document.getElementById('mission-taps');
+    const energyTextEl = document.getElementById('energy-text');
 
     function updateUI() {
       pointsEl.textContent = 'Points : ' + points;
@@ -151,8 +169,9 @@
       const xpPercent = Math.min(100, (xp / xpPerLevel) * 100);
       levelBarFillEl.style.width = xpPercent + '%';
 
-      const pointsToNextLevel = Math.max(0, xpPerLevel - xp);
-      levelTextEl.textContent = 'XP : ' + xp + ' / ' + xpPerLevel + ' · Encore ' + pointsToNextLevel + ' XP pour le niveau suivant';
+      const xpToNextLevel = Math.max(0, xpPerLevel - xp);
+      levelTextEl.textContent =
+        'XP : ' + xp + ' / ' + xpPerLevel + ' · Encore ' + xpToNextLevel + ' XP pour le niveau suivant';
 
       const pointsToCoffre = Math.max(0, coffreTarget - points);
       if (pointsToCoffre === 0) {
@@ -162,13 +181,21 @@
       }
 
       const tapsRemaining = Math.max(0, tapsTarget - taps);
-      missionTapsEl.textContent = '• Faire 100 taps → Boost x2 (reste ' + tapsRemaining + ')';
-      missionCoffreEl.textContent = '• Gagner 200 points → Coffre bronze (reste ' + pointsToCoffre + ')';
+      missionTapsEl.textContent =
+        '• Faire 100 taps → Boost x2 (reste ' + tapsRemaining + ')';
+      missionCoffreEl.textContent =
+        '• Gagner 200 points → Coffre bronze (reste ' + pointsToCoffre + ')';
+
+      energyTextEl.textContent = 'Énergie : ' + energy + ' / ' + maxEnergy;
+      tapBtn.disabled = energy <= 0;
     }
 
     function handleTap() {
+      if (energy <= 0) return;
+
       points += 1;
       taps += 1;
+      energy = Math.max(0, energy - 1);
 
       if (points % pointsPerXp === 0) {
         xp += 1;
@@ -177,7 +204,6 @@
       if (xp >= xpPerLevel) {
         xp -= xpPerLevel;
         level += 1;
-        // Simple feedback texte pour le moment
         alert('LEVEL UP ! Niveau ' + level);
       }
 
@@ -195,6 +221,14 @@
         floatingPlusEl.style.transform = 'translateY(-10px)';
       }, 200);
     }
+
+    // Régénération d'énergie
+    setInterval(() => {
+      if (energy < maxEnergy) {
+        energy += 1;
+        updateUI();
+      }
+    }, energyRegenMs);
 
     tapBtn.addEventListener('click', handleTap);
 
