@@ -10,256 +10,158 @@
     body {
       margin: 0;
       min-height: 100vh;
-      background:
-        radial-gradient(circle at top, #151b3f 0%, #050816 55%, #02020a 100%);
-      color: #f5f5f5;
       font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      padding: 20px 10px 40px;
-    }
-
-    body::before,
-    body::after {
-      content: "";
-      position: fixed;
-      border-radius: 50%;
-      background: radial-gradient(circle, rgba(255, 215, 0, 0.25), transparent 60%);
-      pointer-events: none;
-      z-index: -1;
-      filter: blur(1px);
-    }
-    body::before {
-      width: 160px;
-      height: 160px;
-      top: 8%;
-      left: 6%;
-    }
-    body::after {
-      width: 200px;
-      height: 200px;
-      bottom: 4%;
-      right: 5%;
-    }
-
-    #hub-header {
-      text-align: center;
-      margin-bottom: 16px;
-    }
-    #hub-title {
-      font-size: 22px;
-      font-weight: 600;
-      margin: 4px 0;
-    }
-    #hub-subtitle {
-      font-size: 12px;
-      opacity: 0.8;
-    }
-
-    #logo-coin {
-      width: 70px;
-      height: 70px;
-      margin: 0 auto 6px;
-      border-radius: 50%;
-      background: radial-gradient(circle at 30% 20%, #ffe27a, #f5b700 55%, #b27a00 100%);
-      box-shadow: 0 0 16px rgba(0, 0, 0, 0.8);
-      position: relative;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 4px;
-    }
-    #logo-coin-inner {
-      width: 100%;
-      height: 100%;
-      border-radius: 50%;
-      overflow: hidden;
-      background: radial-gradient(circle at 30% 20%, #020617, #0f172a 70%);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-    #logo-coin-inner img {
-      width: 115%;
-      height: 115%;
-      object-fit: cover;
-      object-position: center;
-      display: block;
-    }
-    #logo-text {
-      font-size: 10px;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      opacity: 0.9;
-      color: #facc15;
-    }
-
-    #games-section-title {
-      font-size: 14px;
-      font-weight: 600;
-      margin: 18px 0 8px;
-      padding: 0 6px;
-    }
-
-    .cards {
+      background:
+        radial-gradient(circle at top, #020617 0%, #020617 40%, #020617 100%);
+      color: #f9fafb;
+      padding: 18px 10px 24px;
       display: flex;
       flex-direction: column;
-      gap: 10px;
+      align-items: center;
+    }
+
+    #header {
+      text-align: center;
+      margin-bottom: 12px;
+    }
+    #title {
+      font-size: 22px;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+    #subtitle {
+      font-size: 12px;
+      opacity: 0.8;
+      margin-top: 4px;
+    }
+
+    #logo {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      margin-bottom: 8px;
+      background: radial-gradient(circle at 30% 20%, #ffe27a, #f5b700 55%, #b27a00 100%);
+      box-shadow: 0 0 18px rgba(0, 0, 0, 0.8);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+    #logo img {
+      width: 110%;
+      height: 110%;
+      object-fit: cover;
+    }
+
+    #games-grid {
+      width: 100%;
+      max-width: 480px;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 12px;
+      margin-top: 10px;
     }
 
     .game-card {
       background: rgba(15, 23, 42, 0.96);
       border-radius: 14px;
-      padding: 12px 14px;
-      display: flex;
-      align-items: center;
-      gap: 12px;
+      padding: 10px 10px 12px;
+      box-shadow: 0 10px 24px rgba(0, 0, 0, 0.85);
       border: 1px solid rgba(148, 163, 184, 0.6);
-      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.8);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
     }
 
-    .game-icon {
-      width: 46px;
-      height: 46px;
+    .game-thumb {
+      width: 96px;
+      height: 96px;
       border-radius: 12px;
-      background: radial-gradient(circle at 30% 20%, #22c55e, #15803d 70%);
+      margin-bottom: 8px;
+      overflow: hidden;
+      background: radial-gradient(circle at 20% 0%, rgba(248, 250, 252, 0.18), transparent 60%);
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 22px;
+    }
+    .game-thumb img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
     }
 
-    .game-content {
-      flex: 1;
-    }
-    .game-title-row {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 2px;
-    }
     .game-title {
       font-size: 14px;
       font-weight: 600;
+      margin-bottom: 2px;
     }
-    .game-tag {
-      font-size: 10px;
-      padding: 2px 6px;
-      border-radius: 999px;
-      background: rgba(34, 197, 94, 0.15);
-      color: #4ade80;
-    }
-    .game-desc {
+    .game-tagline {
       font-size: 11px;
-      opacity: 0.85;
-      margin-bottom: 6px;
-    }
-
-    .game-meta {
-      font-size: 10px;
       opacity: 0.8;
+      margin-bottom: 8px;
     }
 
-    .game-cta {
-      margin-left: 8px;
-    }
-    .game-cta a {
+    .play-btn {
       display: inline-block;
-      padding: 8px 14px;
+      padding: 7px 16px;
       border-radius: 999px;
-      font-size: 12px;
-      text-decoration: none;
-      color: white;
       background: linear-gradient(135deg, #22c55e, #16a34a);
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.7);
-      touch-action: manipulation;
-    }
-    .game-cta a:active {
-      transform: translateY(1px);
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.8);
+      color: #fff;
+      font-size: 13px;
+      text-decoration: none;
+      box-shadow: 0 5px 14px rgba(0, 0, 0, 0.7);
     }
 
-    .soon-tag {
-      font-size: 10px;
-      padding: 2px 6px;
-      border-radius: 999px;
-      background: rgba(248, 250, 252, 0.06);
-      color: #e5e7eb;
-    }
-    .disabled-cta {
-      display: inline-block;
-      padding: 8px 14px;
-      border-radius: 999px;
-      font-size: 12px;
+    .coming-soon {
       opacity: 0.6;
-      background: linear-gradient(135deg, #4b5563, #374151);
-      color: #e5e7eb;
     }
 
-    #disclaimer {
-      margin-top: 18px;
+    #footer {
+      margin-top: 16px;
       font-size: 10px;
       opacity: 0.7;
       text-align: center;
+      max-width: 420px;
     }
   </style>
 </head>
 <body>
-  <div id="hub-header">
-    <div id="logo-coin">
-      <div id="logo-coin-inner">
-        <img src="image-6.png" alt="Logo Crypto Win Frog" />
-      </div>
+  <div id="header">
+    <div id="logo">
+      <img src="image-6.png" alt="Pepe USD Logo" />
     </div>
-    <div id="logo-text">Pepe USD · Hub</div>
-    <div id="hub-title">PEPEGAME Hub</div>
-    <div id="hub-subtitle">Choisis ton jeu, farm tes PEPE Points (prototype local)</div>
+    <div id="title">PEPEGAME HUB</div>
+    <div id="subtitle">Tap · Earn · Play · Flappy (proto local)</div>
   </div>
 
-  <div id="games-section-title">Jeux disponibles</div>
-
-  <div class="cards">
-    <!-- Carte Tap PEPE (jouable) -->
+  <div id="games-grid">
+    <!-- Jeu 1 : Tap Ninja Frog -->
     <div class="game-card">
-      <div class="game-icon">🐸</div>
-      <div class="game-content">
-        <div class="game-title-row">
-          <div class="game-title">Tap PEPE</div>
-          <div class="game-tag">Farm · Live</div>
-        </div>
-        <div class="game-desc">
-          Tape pour gagner des PEPE Points avec une énergie limitée et des niveaux à débloquer.
-        </div>
-        <div class="game-meta">
-          Session courte · Hyper casual · Tap to earn (local)
-        </div>
+      <div class="game-thumb">
+        <img src="image-7.png" alt="Tap Ninja Frog" />
       </div>
-      <div class="game-cta">
-        <a href="index.html">Jouer</a>
-      </div>
+      <div class="game-title">Tap Ninja Frog</div>
+      <div class="game-tagline">Farm de points, upgrades & ciel qui passe de la nuit au jour.</div>
+      <a href="index.html" class="play-btn">Jouer</a>
     </div>
 
-    <!-- Carte Flappy PEPE (soon) -->
-    <div class="game-card">
-      <div class="game-icon">🕹️</div>
-      <div class="game-content">
-        <div class="game-title-row">
-          <div class="game-title">Flappy PEPE</div>
-          <div class="soon-tag">Soon</div>
-        </div>
-        <div class="game-desc">
-          Fais voler PEPE, évite les obstacles et cumule des points bonus pour ton compte global.
-        </div>
-        <div class="game-meta">
-          Skill-based · Score attack · Connecté au même solde PEPE Points (à venir)
-        </div>
+    <!-- Jeu 2 : Flappy Pepe (placeholder) -->
+    <div class="game-card coming-soon">
+      <div class="game-thumb">
+        <img src="image-6.png" alt="Flappy Pepe" />
       </div>
-      <div class="game-cta">
-        <span class="disabled-cta">Bientôt</span>
+      <div class="game-title">Flappy Pepe</div>
+      <div class="game-tagline">Bientôt : dodge & score vertical façon flappy.</div>
+      <div class="play-btn" style="background:linear-gradient(135deg,#4b5563,#374151);box-shadow:none;">
+        Bientôt dispo
       </div>
     </div>
   </div>
 
-  <div id="disclaimer">
-    Pepe USD Hub est un prototype ludique. Aucun gain réel, pas un conseil financier.
+  <div id="footer">
+    Prototype non connecté à une blockchain, sans gains réels. Les données sont stockées en local sur ton appareil.
   </div>
 </body>
 </html>
