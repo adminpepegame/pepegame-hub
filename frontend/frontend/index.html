@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <title>PEPEGAME - Tap to Earn</title>
+  <style>
+    body {
+      background: #050816;
+      color: #f5f5f5;
+      font-family: Arial, sans-serif;
+      text-align: center;
+      padding: 40px 10px;
+    }
+    h1 { margin-bottom: 10px; }
+    #points {
+      font-size: 32px;
+      margin: 10px 0 20px;
+    }
+    #tap-button {
+      background: #27ae60;
+      border: none;
+      color: white;
+      padding: 16px 32px;
+      font-size: 20px;
+      border-radius: 999px;
+      cursor: pointer;
+    }
+    #tap-button:active {
+      transform: scale(0.97);
+      background: #1f8a4c;
+    }
+  </style>
+</head>
+<body>
+  <h1>PEPEGAME - Tap PEPE</h1>
+  <p>Chaque tap = +1 PEPE POINT (MVP local)</p>
+  <div id="points">Points : 0</div>
+  <button id="tap-button">TAP PEPE 🐸</button>
+
+  <script>
+    let points = 0;
+    const pointsEl = document.getElementById('points');
+    const btn = document.getElementById('tap-button');
+
+    btn.addEventListener('click', () => {
+      points += 1;
+      pointsEl.textContent = 'Points : ' + points;
+    });
+  </script>
+</body>
+</html>
