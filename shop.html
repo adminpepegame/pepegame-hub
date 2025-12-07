@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+  <title>PEPEGAME - Boutique</title>
+  <style>
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background:
+        radial-gradient(circle at top, #020617 0%, #020617 40%, #020617 100%);
+      color: #f9fafb;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      padding: 18px 10px 32px;
+      text-align: center;
+    }
+
+    #header {
+      margin-bottom: 14px;
+    }
+    #title {
+      font-size: 20px;
+      font-weight: 600;
+      margin: 4px 0;
+    }
+    #subtitle {
+      font-size: 12px;
+      opacity: 0.8;
+    }
+
+    #stats {
+      margin: 12px auto 18px;
+      padding: 10px 12px;
+      max-width: 360px;
+      border-radius: 12px;
+      background: rgba(15, 23, 42, 0.96);
+      border: 1px solid rgba(148, 163, 184, 0.5);
+      font-size: 12px;
+      text-align: left;
+    }
+    .stat-line {
+      margin: 2px 0;
+    }
+
+    #shop {
+      margin: 0 auto;
+      max-width: 380px;
+      text-align: left;
+      background: rgba(15, 23, 42, 0.96);
+      border-radius: 14px;
+      padding: 10px 12px;
+      box-shadow: 0 10px 24px rgba(0, 0, 0, 0.9);
+      border: 1px solid rgba(59, 130, 246, 0.6);
+      font-size: 13px;
+    }
+
+    #shop-title {
+      font-size: 14px;
+      font-weight: 600;
+      margin-bottom: 6px;
+    }
+
+    .item {
+      margin: 8px 0;
+      padding-bottom: 6px;
+      border-bottom: 1px solid rgba(30, 64, 175, 0.5);
+    }
+    .item:last-child {
+      border-bottom: none;
+      padding-bottom: 0;
+    }
+
+    .item-name {
+      font-weight: 600;
+      margin-bottom: 2px;
+    }
+    .item-desc {
+      font-size: 12px;
+      opacity: 0.85;
+      margin-bottom: 4px;
+    }
+    .item-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+    }
+    .item-info {
+      font-size: 11px;
+      opacity: 0.9;
+    }
+    .btn-buy {
+      font-size: 12px;
+      border-radius: 999px;
+      padding: 6px 10px;
+      border: none;
+      cursor: pointer;
+      background: linear-gradient(135deg, #22c55e, #16a34a);
+      color: white;
+      touch-action: manipulation;
+      white-space: nowrap;
+    }
+    .btn-buy:disabled {
+      background: linear-gradient(135deg, #4b5563, #374151);
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    #back-link {
+      display: inline-block;
+      margin-top: 16px;
+      font-size: 13px;
+      text-decoration: none;
+      color: #a5b4fc;
+    }
+
+    #notice {
+      margin-top: 8px;
+      font-size: 10px;
+      opacity: 0.7;
+    }
+  </style>
+</head>
+<body>
+  <div id="header">
+    <div id="title">Boutique PEPEGAME</div>
+    <div id="subtitle">Dépense tes points pour devenir plus fort (prototype local, non persistant)</div>
+  </div>
+
+  <div id="stats">
+    <div class="stat-line">Points actuels : <span id="stat-points">0</span></div>
+    <div class="stat-line">Points par tap : <span id="stat-tap">1</span></div>
+    <div class="stat-line">Regen énergie : 1 énergie / <span id="stat-regen">30</span> s</div>
+    <div class="stat-line">Niveau style grenouille : <span id="stat-style">1</span></div>
+  </div>
+
+  <div id="shop">
+    <div id="shop-title">Améliorations disponibles</div>
+
+    <div class="item">
+      <div class="item-name">Bonus points par tap</div>
+      <div class="item-desc">Chaque niveau augmente définitivement les points gagnés à chaque tap.</div>
+      <div class="item-footer">
+        <div class="item-info">Actuel : <span id="info-tap">+1</span> / tap</div>
+        <button class="btn-buy" id="buy-tap">Acheter (50 pts)</button>
+      </div>
+    </div>
+
+    <div class="item">
+      <div class="item-name">Vitesse de recharge d'énergie</div>
+      <div class="item-desc">Réduit le temps nécessaire pour récupérer 1 point d'énergie.</div>
+      <div class="item-footer">
+        <div class="item-info">Actuel : <span id="info-regen">30</span> s / énergie</div>
+        <button class="btn-buy" id="buy-regen">Acheter (80 pts)</button>
+      </div>
+    </div>
+
+    <div class="item">
+      <div class="item-name">Style grenouille ninja</div>
+      <div class="item-desc">Améliore l'aura visuelle de ta grenouille (effets lumineux).</div>
+      <div class="item-footer">
+        <div class="item-info">Niveau style : <span id="info-style">1</span></div>
+        <button class="btn-buy" id="buy-style">Améliorer (100 pts)</button>
+      </div>
+    </div>
+  </div>
+
+  <a id="back-link" href="index.html">⬅ Retour au jeu</a>
+
+  <div id="notice">Les valeurs ici sont locales au navigateur et ne sont pas encore synchronisées avec la page de jeu.</div>
+
+  <script>
+    // Valeurs locales de démo (à synchroniser plus tard si tu ajoutes un vrai stockage)
+    let points = 0;
+    let tapValue = 1;
+    let regenSeconds = 30;
+    let styleLevel = 1;
+
+    const statPointsEl = document.getElementById('stat-points');
+    const statTapEl = document.getElementById('stat-tap');
+    const statRegenEl = document.getElementById('stat-regen');
+    const statStyleEl = document.getElementById('stat-style');
+
+    const infoTapEl = document.getElementById('info-tap');
+    const infoRegenEl = document.getElementById('info-regen');
+    const infoStyleEl = document.getElementById('info-style');
+
+    const btnTap = document.getElementById('buy-tap');
+    const btnRegen = document.getElementById('buy-regen');
+    const btnStyle = document.getElementById('buy-style');
+
+    function updateUI() {
+      statPointsEl.textContent = points;
+      statTapEl.textContent = tapValue;
+      statRegenEl.textContent = regenSeconds;
+      statStyleEl.textContent = styleLevel;
+
+      infoTapEl.textContent = '+' + tapValue;
+      infoRegenEl.textContent = regenSeconds;
+      infoStyleEl.textContent = styleLevel;
+
+      btnTap.disabled = points < 50;
+      btnRegen.disabled = points < 80 || regenSeconds <= 10;
+      btnStyle.disabled = points < 100;
+    }
+
+    // Petites fonctions d'achat (locales pour l’instant)
+    btnTap.addEventListener('click', () => {
+      if (points < 50) return;
+      points -= 50;
+      tapValue += 1;
+      updateUI();
+      alert('Points par tap améliorés à +' + tapValue);
+    });
+
+    btnRegen.addEventListener('click', () => {
+      if (points < 80 || regenSeconds <= 10) return;
+      points -= 80;
+      regenSeconds = Math.max(10, regenSeconds - 5);
+      updateUI();
+      alert('Regen énergie améliorée : 1 énergie / ' + regenSeconds + ' s');
+    });
+
+    btnStyle.addEventListener('click', () => {
+      if (points < 100) return;
+      points -= 100;
+      styleLevel += 1;
+      updateUI();
+      alert('Style grenouille amélioré au niveau ' + styleLevel + ' (effets visuels à venir).');
+    });
+
+    // Valeurs de départ pour test
+    points = 200; // pour que tu puisses tester la boutique sans lien avec le jeu
+    updateUI();
+  </script>
+</body>
+      </html>
