@@ -15,7 +15,7 @@
       color: #f5f5f5;
       font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
       text-align: center;
-      padding: 20px 10px 80px;
+      padding: 20px 10px 96px;
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -50,7 +50,7 @@
       margin-bottom: 8px;
     }
 
-    /* Logo avec image bien recadrée dans le jeton */
+    /* Logo */
     #logo-wrapper {
       margin-top: 6px;
       margin-bottom: 8px;
@@ -105,6 +105,7 @@
       margin-bottom: 12px;
     }
 
+    /* Barre de niveau */
     #level-bar-container {
       width: 82%;
       max-width: 340px;
@@ -123,7 +124,14 @@
     #level-text {
       font-size: 12px;
       opacity: 0.9;
-      margin-bottom: 16px;
+      margin-bottom: 8px;
+    }
+
+    #buff-text {
+      font-size: 11px;
+      color: #facc15;
+      margin-bottom: 14px;
+      min-height: 14px;
     }
 
     #points {
@@ -176,16 +184,65 @@
       transition: opacity 0.2s ease-out, transform 0.2s ease-out;
     }
 
-    #missions {
+    /* Panneau upgrades + missions */
+    #bottom-panel {
       position: fixed;
-      bottom: 18px;
+      bottom: 14px;
       left: 50%;
       transform: translateX(-50%);
-      width: 92%;
-      max-width: 380px;
+      width: 94%;
+      max-width: 420px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    #upgrades {
+      background: rgba(15, 23, 42, 0.96);
+      border-radius: 14px;
+      padding: 8px 12px;
+      font-size: 12px;
+      text-align: left;
+      box-shadow: 0 10px 24px rgba(0, 0, 0, 0.7);
+      border: 1px solid rgba(59, 130, 246, 0.6);
+    }
+    #upgrades-title {
+      font-weight: 600;
+      margin-bottom: 4px;
+      font-size: 12px;
+    }
+    .upgrade-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin: 2px 0;
+      gap: 6px;
+    }
+    .upgrade-label {
+      font-size: 11px;
+      opacity: 0.9;
+    }
+    .upgrade-btn {
+      font-size: 11px;
+      border-radius: 999px;
+      padding: 4px 8px;
+      border: none;
+      cursor: pointer;
+      background: linear-gradient(135deg, #3b82f6, #2563eb);
+      color: white;
+      touch-action: manipulation;
+      white-space: nowrap;
+    }
+    .upgrade-btn:disabled {
+      background: linear-gradient(135deg, #4b5563, #374151);
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    #missions {
       background: rgba(15, 23, 42, 0.9);
       border-radius: 14px;
-      padding: 10px 14px;
+      padding: 8px 12px;
       font-size: 12px;
       text-align: left;
       box-shadow: 0 10px 24px rgba(0, 0, 0, 0.7);
@@ -199,6 +256,7 @@
     .mission-line {
       margin: 2px 0;
       opacity: 0.9;
+      font-size: 11px;
     }
 
     #disclaimer {
@@ -221,12 +279,13 @@
   </div>
 
   <h1>PEPEGAME – Tap PEPE</h1>
-  <div id="subtitle">Farm tes PEPE Points, prépare ton futur airdrop (prototype local)</div>
+  <div id="subtitle">Farm tes PEPE Points, upgrades & bonus x2 (prototype local)</div>
 
   <div id="level-bar-container">
     <div id="level-bar-fill"></div>
   </div>
   <div id="level-text">XP : <span id="xp-value">0</span> / <span id="xp-max">100</span></div>
+  <div id="buff-text"></div>
 
   <div id="points">Points : 0</div>
   <div id="next-target">Prochain coffre à 200 points</div>
@@ -235,28 +294,67 @@
   <div id="energy-text">Énergie : 100 / 100</div>
   <div id="floating-plus"></div>
 
-  <div id="missions">
-    <div id="missions-title">Missions du jour</div>
-    <div class="mission-line" id="mission-coffre">• Gagner 200 points → Coffre bronze</div>
-    <div class="mission-line" id="mission-taps">• Faire 100 taps → Boost x2 (visuel)</div>
-  </div>
-
   <div id="disclaimer">Pepe USD Game est un prototype ludique. Aucun gain réel, pas un conseil financier.</div>
 
+  <div id="bottom-panel">
+    <div id="upgrades">
+      <div id="upgrades-title">Upgrades (points locaux)</div>
+      <div class="upgrade-row">
+        <div class="upgrade-label">+1 point par tap (niveau <span id="lvl-tap">1</span>)</div>
+        <button class="upgrade-btn" id="btn-up-tap">Coût : 50</button>
+      </div>
+      <div class="upgrade-row">
+        <div class="upgrade-label">+20 énergie max (actuel : <span id="lvl-energy">100</span>)</div>
+        <button class="upgrade-btn" id="btn-up-energy">Coût : 80</button>
+      </div>
+      <div class="upgrade-row">
+        <div class="upgrade-label">Regen plus rapide (-5 s) </div>
+        <button class="upgrade-btn" id="btn-up-regen">Coût : 60</button>
+      </div>
+    </div>
+
+    <div id="missions">
+      <div id="missions-title">Missions du jour</div>
+      <div class="mission-line" id="mission-coffre">• Gagner 200 points → Coffre bronze</div>
+      <div class="mission-line" id="mission-taps">• Faire 100 taps → Boost x2 30s</div>
+      <div class="mission-line" id="mission-streak">• 25 taps d'affilée sans pause → Mini bonus x2 10s</div>
+    </div>
+  </div>
+
   <script>
+    // Stats de base
     let points = 0;
     let taps = 0;
     let level = 1;
     let xp = 0;
     const xpPerLevel = 100;
-    const pointsPerXp = 10;
+
+    // Upgrades
+    let tapValue = 1;
+    let tapUpgradeLevel = 1;
+
+    let maxEnergy = 100;
+    let energy = maxEnergy;
+    let baseRegenMs = 30000; // 30s au début
+    let regenMs = baseRegenMs;
+
     const coffreTarget = 200;
     const tapsTarget = 100;
+    const streakTarget = 25;
+    let streak = 0;
+    let lastTapTime = 0;
+    const streakTimeoutMs = 4000; // si tu arrêtes +4s, la série casse
 
-    let energy = 100;
-    const maxEnergy = 100;
-    const energyRegenMs = 30000;
+    // Buff x2
+    let isBuffActive = false;
+    let buffMultiplier = 1;
+    let buffEndTime = 0;
+    let buffInterval = null;
 
+    // Points → XP
+    const pointsPerXp = 10;
+
+    // Elements
     const pointsEl = document.getElementById('points');
     const tapBtn = document.getElementById('tap-button');
     const levelLabelEl = document.getElementById('level-label');
@@ -266,9 +364,17 @@
     const levelTextEl = document.getElementById('level-text');
     const nextTargetEl = document.getElementById('next-target');
     const floatingPlusEl = document.getElementById('floating-plus');
+    const energyTextEl = document.getElementById('energy-text');
     const missionCoffreEl = document.getElementById('mission-coffre');
     const missionTapsEl = document.getElementById('mission-taps');
-    const energyTextEl = document.getElementById('energy-text');
+    const missionStreakEl = document.getElementById('mission-streak');
+    const buffTextEl = document.getElementById('buff-text');
+
+    const lvlTapEl = document.getElementById('lvl-tap');
+    const lvlEnergyEl = document.getElementById('lvl-energy');
+    const btnUpTap = document.getElementById('btn-up-tap');
+    const btnUpEnergy = document.getElementById('btn-up-energy');
+    const btnUpRegen = document.getElementById('btn-up-regen');
 
     function updateUI() {
       pointsEl.textContent = 'Points : ' + points;
@@ -292,18 +398,58 @@
 
       const tapsRemaining = Math.max(0, tapsTarget - taps);
       missionTapsEl.textContent =
-        '• Faire 100 taps → Boost x2 (reste ' + tapsRemaining + ')';
+        '• Faire 100 taps → Boost x2 30s (reste ' + tapsRemaining + ')';
+
       missionCoffreEl.textContent =
         '• Gagner 200 points → Coffre bronze (reste ' + pointsToCoffre + ')';
 
+      const streakRemaining = Math.max(0, streakTarget - streak);
+      missionStreakEl.textContent =
+        '• Série de 25 taps (reste ' + streakRemaining + ') → Mini bonus x2 10s';
+
       energyTextEl.textContent = 'Énergie : ' + energy + ' / ' + maxEnergy;
       tapBtn.disabled = energy <= 0;
+
+      lvlTapEl.textContent = tapUpgradeLevel;
+      lvlEnergyEl.textContent = maxEnergy;
+      btnUpTap.disabled = points < 50;
+      btnUpEnergy.disabled = points < 80;
+      btnUpRegen.disabled = points < 60;
+    }
+
+    function startBuff(durationMs, label) {
+      const now = Date.now();
+      buffEndTime = now + durationMs;
+      isBuffActive = true;
+      buffMultiplier = 2;
+      buffTextEl.textContent = 'Bonus actif : x2 (' + label + ')';
+
+      if (buffInterval) clearInterval(buffInterval);
+      buffInterval = setInterval(() => {
+        const remaining = buffEndTime - Date.now();
+        if (remaining <= 0) {
+          isBuffActive = false;
+          buffMultiplier = 1;
+          buffTextEl.textContent = '';
+          clearInterval(buffInterval);
+        }
+      }, 200);
     }
 
     function handleTap() {
       if (energy <= 0) return;
 
-      points += 1;
+      const now = Date.now();
+      if (!lastTapTime || now - lastTapTime <= streakTimeoutMs) {
+        streak += 1;
+      } else {
+        streak = 1;
+      }
+      lastTapTime = now;
+
+      const gainBase = tapValue;
+      const gain = gainBase * buffMultiplier;
+      points += gain;
       taps += 1;
       energy = Math.max(0, energy - 1);
 
@@ -317,12 +463,24 @@
         alert('LEVEL UP ! Niveau ' + level);
       }
 
-      showFloatingPlus();
+      // Mission taps 100 → gros buff 30s
+      if (taps === tapsTarget) {
+        startBuff(30000, '100 taps');
+        alert('Boost x2 pendant 30s !');
+      }
+
+      // Série 25 taps → mini buff 10s
+      if (streak === streakTarget) {
+        startBuff(10000, 'série 25');
+        alert('Mini bonus x2 pendant 10s !');
+      }
+
+      showFloatingPlus(gain);
       updateUI();
     }
 
-    function showFloatingPlus() {
-      floatingPlusEl.textContent = '+1';
+    function showFloatingPlus(gain) {
+      floatingPlusEl.textContent = '+' + gain;
       floatingPlusEl.style.opacity = '1';
       floatingPlusEl.style.transform = 'translateY(0px)';
 
@@ -332,12 +490,38 @@
       }, 200);
     }
 
+    // Regen énergie
     setInterval(() => {
       if (energy < maxEnergy) {
         energy += 1;
         updateUI();
       }
-    }, energyRegenMs);
+    }, () => regenMs);
+
+    // Upgrades
+    btnUpTap.addEventListener('click', () => {
+      if (points < 50) return;
+      points -= 50;
+      tapUpgradeLevel += 1;
+      tapValue += 1;
+      updateUI();
+    });
+
+    btnUpEnergy.addEventListener('click', () => {
+      if (points < 80) return;
+      points -= 80;
+      maxEnergy += 20;
+      energy = maxEnergy;
+      updateUI();
+    });
+
+    btnUpRegen.addEventListener('click', () => {
+      if (points < 60) return;
+      points -= 60;
+      regenMs = Math.max(10000, regenMs - 5000); // minimum 10s
+      alert('Regen énergie améliorée !');
+      updateUI();
+    });
 
     tapBtn.addEventListener('click', handleTap);
 
