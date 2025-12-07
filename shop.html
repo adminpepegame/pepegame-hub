@@ -127,7 +127,7 @@
 <body>
   <div id="header">
     <div id="title">Boutique PEPEGAME</div>
-    <div id="subtitle">Dépense tes points pour devenir plus fort (prototype local, non persistant)</div>
+    <div id="subtitle">Dépense tes points pour booster ton Tap PEPE (données stockées dans ton navigateur)</div>
   </div>
 
   <div id="stats">
@@ -160,7 +160,7 @@
 
     <div class="item">
       <div class="item-name">Style grenouille ninja</div>
-      <div class="item-desc">Améliore l'aura visuelle de ta grenouille (effets lumineux).</div>
+      <div class="item-desc">Améliore l'aura visuelle de ta grenouille (effets lumineux dans le jeu).</div>
       <div class="item-footer">
         <div class="item-info">Niveau style : <span id="info-style">1</span></div>
         <button class="btn-buy" id="buy-style">Améliorer (100 pts)</button>
@@ -170,10 +170,37 @@
 
   <a id="back-link" href="index.html">⬅ Retour au jeu</a>
 
-  <div id="notice">Les valeurs ici sont locales au navigateur et ne sont pas encore synchronisées avec la page de jeu.</div>
+  <div id="notice">Les améliorations et les points sont sauvegardés localement dans ton navigateur (localStorage).</div>
 
   <script>
-    // Valeurs locales de démo (à synchroniser plus tard si tu ajoutes un vrai stockage)
+    function loadState() {
+      const raw = localStorage.getItem('pepeGameState');
+      if (!raw) {
+        return {
+          points: 0,
+          tapValue: 1,
+          regenSeconds: 30,
+          styleLevel: 1
+        };
+      }
+      try {
+        const data = JSON.parse(raw);
+        return {
+          points: data.points ?? 0,
+          tapValue: data.tapValue ?? 1,
+          regenSeconds: data.regenSeconds ?? 30,
+          styleLevel: data.styleLevel ?? 1
+        };
+      } catch (e) {
+        return { points: 0, tapValue: 1, regenSeconds: 30, styleLevel: 1 };
+      }
+    }
+
+    function saveState() {
+      const state = { points, tapValue, regenSeconds, styleLevel };
+      localStorage.setItem('pepeGameState', JSON.stringify(state));
+    }
+
     let points = 0;
     let tapValue = 1;
     let regenSeconds = 30;
@@ -192,6 +219,15 @@
     const btnRegen = document.getElementById('buy-regen');
     const btnStyle = document.getElementById('buy-style');
 
+    (function init() {
+      const s = loadState();
+      points = s.points;
+      tapValue = s.tapValue;
+      regenSeconds = s.regenSeconds;
+      styleLevel = s.styleLevel;
+      updateUI();
+    })();
+
     function updateUI() {
       statPointsEl.textContent = points;
       statTapEl.textContent = tapValue;
@@ -207,11 +243,11 @@
       btnStyle.disabled = points < 100;
     }
 
-    // Petites fonctions d'achat (locales pour l’instant)
     btnTap.addEventListener('click', () => {
       if (points < 50) return;
       points -= 50;
       tapValue += 1;
+      saveState();
       updateUI();
       alert('Points par tap améliorés à +' + tapValue);
     });
@@ -220,6 +256,7 @@
       if (points < 80 || regenSeconds <= 10) return;
       points -= 80;
       regenSeconds = Math.max(10, regenSeconds - 5);
+      saveState();
       updateUI();
       alert('Regen énergie améliorée : 1 énergie / ' + regenSeconds + ' s');
     });
@@ -228,13 +265,10 @@
       if (points < 100) return;
       points -= 100;
       styleLevel += 1;
+      saveState();
       updateUI();
-      alert('Style grenouille amélioré au niveau ' + styleLevel + ' (effets visuels à venir).');
+      alert('Style grenouille amélioré au niveau ' + styleLevel + ' (effets visibles dans le jeu).');
     });
-
-    // Valeurs de départ pour test
-    points = 200; // pour que tu puisses tester la boutique sans lien avec le jeu
-    updateUI();
   </script>
 </body>
-      </html>
+</html>
